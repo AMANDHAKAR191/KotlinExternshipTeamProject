@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpanseScreen
 import com.externship.kotlinexternshipteamproject.presentation.auth.AuthScreen
 import com.externship.kotlinexternshipteamproject.presentation.navigation.Screen.AuthScreen
 import com.externship.kotlinexternshipteamproject.presentation.navigation.Screen.ProfileScreen
@@ -28,7 +29,7 @@ fun NavGraph(
         ) {
             AuthScreen(
                 navigateToProfileScreen = {
-                    navController.navigate(ProfileScreen.route)
+                    navController.navigate(Screen.AddEditExpanseScreen.route)
                 }
             )
         }
@@ -41,6 +42,12 @@ fun NavGraph(
                     navController.navigate(AuthScreen.route)
                 }
             )
+        }
+        composable(route = Screen.AddEditExpanseScreen.route) {
+            AddEditExpanseScreen(navigateToProfileScreen = {
+                navController.popBackStack()
+                navController.navigate(AuthScreen.route)
+            })
         }
     }
 }

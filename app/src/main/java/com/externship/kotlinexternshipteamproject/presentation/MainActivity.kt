@@ -9,7 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.externship.kotlinexternshipteamproject.presentation.auth.AuthViewModel
 import com.externship.kotlinexternshipteamproject.presentation.navigation.NavGraph
-import com.externship.kotlinexternshipteamproject.presentation.navigation.Screen.ProfileScreen
+import com.externship.kotlinexternshipteamproject.presentation.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,5 +35,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun navigateToProfileScreen() = navController.navigate(ProfileScreen.route)
+    private fun navigateToProfileScreen() =
+        navController.navigate(Screen.AddEditExpanseScreen.route)
 }
