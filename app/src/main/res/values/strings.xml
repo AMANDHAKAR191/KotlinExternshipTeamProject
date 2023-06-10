@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">KotlinExternshipTeamProject</string>
+    <string name="app_name">Expanse Manager</string>
+    <string name="web_client_id">925663242052-696e0pue5oiqo0kikre0kkmq8ef9q181.apps.googleusercontent.com</string>
 </resources>
