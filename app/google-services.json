@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "925663242052-91uc5kkovl708si0c3fuiesj41p1ord1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.externship.kotlinexternshipteamproject",
+            "certificate_hash": "a2421560e84046ddc6b576d50f1f598f4c05d8f3"
+          }
+        },
+        {
           "client_id": "925663242052-d0b05af8mbf6s9hjvr5ekf0csolp29n9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -22,7 +30,23 @@
           }
         },
         {
-          "client_id": "925663242052-cfu8mi0dhkstgtbd9n3lfpoa2bsc005h.apps.googleusercontent.com",
+          "client_id": "925663242052-kloq0emvfj1de8u3fk5t3t0qsoeqchpu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.externship.kotlinexternshipteamproject",
+            "certificate_hash": "a2228a5f7e7ac2407fca726c147be11f9b933a7f"
+          }
+        },
+        {
+          "client_id": "925663242052-s7p5mglv1lt12baefh9fl2k1uui857ch.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.externship.kotlinexternshipteamproject",
+            "certificate_hash": "2e2d800b4543d0f2e568dfef82ccbf3a914befd3"
+          }
+        },
+        {
+          "client_id": "925663242052-696e0pue5oiqo0kikre0kkmq8ef9q181.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +59,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "925663242052-cfu8mi0dhkstgtbd9n3lfpoa2bsc005h.apps.googleusercontent.com",
+              "client_id": "925663242052-696e0pue5oiqo0kikre0kkmq8ef9q181.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
