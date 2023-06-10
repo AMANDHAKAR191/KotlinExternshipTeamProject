@@ -5,5 +5,6 @@ data class Expanse(
     val amount: String,
     val category: String,
     val paymentMode: String,
+    val tag: String,
     val note: String
 )
