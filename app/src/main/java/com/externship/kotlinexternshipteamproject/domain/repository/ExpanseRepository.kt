@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ExpanseRepository {
 
-    fun getNotes(): Flow<List<Expanse>>
+    fun getExpanses(): Flow<List<Expanse>>
 
     suspend fun getExpanseById(id: Int): Expanse?
 

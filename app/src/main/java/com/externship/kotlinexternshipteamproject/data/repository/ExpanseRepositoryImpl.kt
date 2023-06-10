@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class ExpanseRepositoryImpl(
     private val dao: ExpanseDao
 ) : ExpanseRepository {
-    override fun getNotes(): Flow<List<Expanse>> {
+    override fun getExpanses(): Flow<List<Expanse>> {
         return dao.getExpanses()
     }
 

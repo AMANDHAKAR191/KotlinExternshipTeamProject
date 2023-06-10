@@ -2,13 +2,22 @@ package com.externship.kotlinexternshipteamproject.di
 
 import android.app.Application
 import android.content.Context
+import androidx.room.Room
 import com.externship.kotlinexternshipteamproject.R
 import com.externship.kotlinexternshipteamproject.core.Constants.SIGN_IN_REQUEST
 import com.externship.kotlinexternshipteamproject.core.Constants.SIGN_UP_REQUEST
+import com.externship.kotlinexternshipteamproject.data.data_source.ExpanseDatabase
 import com.externship.kotlinexternshipteamproject.data.repository.AuthRepositoryImpl
+import com.externship.kotlinexternshipteamproject.data.repository.ExpanseRepositoryImpl
 import com.externship.kotlinexternshipteamproject.data.repository.ProfileRepositoryImpl
 import com.externship.kotlinexternshipteamproject.domain.repository.AuthRepository
+import com.externship.kotlinexternshipteamproject.domain.repository.ExpanseRepository
 import com.externship.kotlinexternshipteamproject.domain.repository.ProfileRepository
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.AddExpanse
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.DeleteExpanse
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpanseUseCases
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpanse
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpanses
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -26,10 +35,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)
 class AppModule {
+    //for authentication
     @Provides
     fun provideFirebaseAuth() = Firebase.auth
 
@@ -114,4 +125,32 @@ class AppModule {
         signInClient = signInClient,
         db = db
     )
+
+    //for expanse room
+    @Provides
+    @Singleton
+    fun provideExpanseDataBase(app: Application): ExpanseDatabase {
+        return Room.databaseBuilder(
+            app,
+            ExpanseDatabase::class.java,
+            ExpanseDatabase.DATABASE_NAME
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideExpanseRepository(database: ExpanseDatabase): ExpanseRepository {
+        return ExpanseRepositoryImpl(database.expanseDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideExpanseUseCases(repository: ExpanseRepository): ExpanseUseCases {
+        return ExpanseUseCases(
+            getExpanse = GetExpanse(repository),
+            getExpanses = GetExpanses(repository),
+            addExpanse = AddExpanse(repository),
+            deleteExpanse = DeleteExpanse(repository)
+        )
+    }
 }
