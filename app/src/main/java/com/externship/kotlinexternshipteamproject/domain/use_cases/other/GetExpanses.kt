@@ -4,8 +4,9 @@ import com.externship.kotlinexternshipteamproject.domain.model.Expanse
 import com.externship.kotlinexternshipteamproject.domain.repository.ExpanseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class GetExpanses(
+class GetExpanses @Inject constructor(
     private val repository: ExpanseRepository
 ) {
     operator fun invoke(): Flow<List<Expanse>> {

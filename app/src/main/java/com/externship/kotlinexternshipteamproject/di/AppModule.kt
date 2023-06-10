@@ -35,7 +35,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Named
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -128,7 +127,6 @@ class AppModule {
 
     //for expanse room
     @Provides
-    @Singleton
     fun provideExpanseDataBase(app: Application): ExpanseDatabase {
         return Room.databaseBuilder(
             app,
@@ -138,13 +136,11 @@ class AppModule {
     }
 
     @Provides
-    @Singleton
     fun provideExpanseRepository(database: ExpanseDatabase): ExpanseRepository {
         return ExpanseRepositoryImpl(database.expanseDao)
     }
 
     @Provides
-    @Singleton
     fun provideExpanseUseCases(repository: ExpanseRepository): ExpanseUseCases {
         return ExpanseUseCases(
             getExpanse = GetExpanse(repository),

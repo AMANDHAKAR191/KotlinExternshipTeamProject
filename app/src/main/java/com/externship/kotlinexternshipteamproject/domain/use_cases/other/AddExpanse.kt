@@ -3,8 +3,9 @@ package com.externship.kotlinexternshipteamproject.domain.use_cases.other
 import com.externship.kotlinexternshipteamproject.domain.model.Expanse
 import com.externship.kotlinexternshipteamproject.domain.model.InvalidExpanseException
 import com.externship.kotlinexternshipteamproject.domain.repository.ExpanseRepository
+import javax.inject.Inject
 
-class AddExpanse(
+class AddExpanse @Inject constructor(
     private val repository: ExpanseRepository
 ) {
     @Throws(InvalidExpanseException::class)
