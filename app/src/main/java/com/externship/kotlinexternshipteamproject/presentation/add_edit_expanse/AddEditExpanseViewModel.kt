@@ -50,6 +50,7 @@ class AddEditExpanseViewModel @Inject constructor(
     )
     val paymentMode: State<ExpanseTextFieldState> = _paymentMode
 
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
