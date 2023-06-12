@@ -9,7 +9,7 @@ data class Expanse(
     val amount: String,
     val category: String,
     val paymentMode: String,
-    val tag: String,
+    val tags: String,
     val note: String,
     @PrimaryKey val id: Int? = null
 )

@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.externship.kotlinexternshipteamproject.domain.model.Expanse
+import com.externship.kotlinexternshipteamproject.domain.model.InvalidExpanseException
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpanseUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,24 +33,37 @@ class AddEditExpanseViewModel @Inject constructor(
 
     private val _amount = mutableStateOf(
         ExpanseTextFieldState(
-            hint = "amount"
+            hint = "Amount"
         )
     )
     val amount: State<ExpanseTextFieldState> = _amount
 
     private val _category = mutableStateOf(
         ExpanseTextFieldState(
-            hint = "category"
+            hint = "Category"
         )
     )
     val category: State<ExpanseTextFieldState> = _category
 
     private val _paymentMode = mutableStateOf(
         ExpanseTextFieldState(
-            hint = "payment mode"
+            hint = "Payment Mode"
         )
     )
     val paymentMode: State<ExpanseTextFieldState> = _paymentMode
+
+    private val _tags = mutableStateOf(
+        ExpanseTextFieldState(
+            hint = "Tags"
+        )
+    )
+    val tags: State<ExpanseTextFieldState> = _tags
+    private val _note = mutableStateOf(
+        ExpanseTextFieldState(
+            hint = "Note"
+        )
+    )
+    val note: State<ExpanseTextFieldState> = _note
 
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -78,6 +93,10 @@ class AddEditExpanseViewModel @Inject constructor(
                             text = expanse.paymentMode,
                             isHintVisible = false
                         )
+                        _tags.value = tags.value.copy(
+                            tagsList = expanse.tags,
+                            isHintVisible = false
+                        )
                     }
                 }
             }
@@ -86,17 +105,63 @@ class AddEditExpanseViewModel @Inject constructor(
 
     fun onEvent(event: AddEditExpanseEvent) {
         when (event) {
+            is AddEditExpanseEvent.EnteredDate -> {
+                _date.value = date.value.copy(
+                    text = event.value
+                )
+            }
+
             is AddEditExpanseEvent.EnteredAmount -> {
                 _amount.value = amount.value.copy(
                     text = event.value
                 )
             }
 
-            is AddEditExpanseEvent.ChangeAmountFocus -> {
-                _amount.value = amount.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            amount.value.text.isBlank()
+            is AddEditExpanseEvent.EnteredCategory -> {
+                _category.value = category.value.copy(
+                    text = event.value
                 )
+            }
+
+            is AddEditExpanseEvent.EnteredPaymentMode -> {
+                _paymentMode.value = paymentMode.value.copy(
+                    text = event.value
+                )
+            }
+
+            is AddEditExpanseEvent.EnteredTags -> {
+                _tags.value = tags.value.copy(
+                    tagsList = event.value
+                )
+            }
+
+            is AddEditExpanseEvent.EnteredNote -> {
+                _note.value = note.value.copy(
+                    text = event.value
+                )
+            }
+
+            is AddEditExpanseEvent.SaveNote -> {
+                viewModelScope.launch {
+                    try {
+                        expanseUseCases.addExpanse(
+                            Expanse(
+                                date = date.value.text,
+                                amount = amount.value.text,
+                                category = category.value.text,
+                                paymentMode = paymentMode.value.text,
+                                tags = tags.value.tagsList,
+                                note = note.value.text
+                            )
+                        )
+                    } catch (e: InvalidExpanseException) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackBar(
+                                message = e.message ?: "Couldn't save Expanse"
+                            )
+                        )
+                    }
+                }
             }
 
             else -> {}

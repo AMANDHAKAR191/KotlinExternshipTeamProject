@@ -30,10 +30,12 @@ import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.
 )
 @Composable
 fun ChipInputField(
+    tags: List<String>,
     onSpacePressed: (List<String>) -> Unit
 ) {
     val (text, setText) = remember { mutableStateOf("") }
     val (chips, setChips) = remember { mutableStateOf(listOf<String>()) }
+    //write the code to show incoming tags
     val newTextValue = remember {
         mutableStateOf("")
     }
@@ -51,7 +53,7 @@ fun ChipInputField(
                 } else {
                     setText(newText)
                 }
-                onSpacePressed(chips)
+
             },
             leadingIcon = {
                 FlowRow(
@@ -59,6 +61,7 @@ fun ChipInputField(
                         .padding(8.dp)
                         .widthIn(max = 200.dp)
                 ) {
+                    onSpacePressed(chips)
                     chips.forEach { chip ->
                         Chip(modifier = Modifier.padding(2.dp), label = chip, onChipClick = {
 

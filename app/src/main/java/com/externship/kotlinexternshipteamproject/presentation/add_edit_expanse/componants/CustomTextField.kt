@@ -12,7 +12,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,6 +23,8 @@ fun CustomTextField(
     enabled: Boolean,
     leadingIcon: () -> ImageVector,
     trailingIcon: () -> ImageVector,
+    singleLine: Boolean,
+    keyboardOptions: KeyboardOptions,
     onClick: (() -> Unit)? = null,
     onTrailingIconClick: (() -> Unit)? = null
 ) {
@@ -44,8 +45,8 @@ fun CustomTextField(
                 }
             })
         },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+        singleLine = singleLine,
+        keyboardOptions = keyboardOptions,
         modifier = Modifier
             .clickable {
                 if (onClick != null) {

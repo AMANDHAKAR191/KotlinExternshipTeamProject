@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.componants.CustomTextField
@@ -34,16 +36,18 @@ fun AddEditExpanseScreen(
     viewModel: AddEditExpanseViewModel = hiltViewModel(),
     navigateToProfileScreen: () -> Unit
 ) {
+    val dateState = viewModel.date.value
     val amountState = viewModel.amount.value
     val categoryState = viewModel.category.value
     val paymentModeState = viewModel.paymentMode.value
+    val tagsState = viewModel.tags.value
+    val noteState = viewModel.note.value
     val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
         //
         // Fetching the Local Context
         val mContext = LocalContext.current
@@ -76,10 +80,27 @@ fun AddEditExpanseScreen(
                 mDate.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
             }, mYear, mMonth, mDay
         )
-//
+        //
 
 
         Text(text = "Add Edit Screen")
+        CustomTextField(
+            text = dateState.text,
+            label = dateState.hint,
+            onValueChange = {},
+            enabled = false,
+            leadingIcon = { Icons.Default.Home },
+            trailingIcon = { Icons.Default.ArrowDropDown },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text
+            ),
+            onClick = {
+                Toast.makeText(context, "DatePicking..", Toast.LENGTH_SHORT).show()
+                mDatePickerDialog.show()
+                viewModel.onEvent(AddEditExpanseEvent.EnteredDate(mDate.value))
+            }
+        )
         CustomTextField(
             text = amountState.text,
             label = amountState.hint,
@@ -87,23 +108,16 @@ fun AddEditExpanseScreen(
             enabled = true,
             leadingIcon = { Icons.Default.Home },
             trailingIcon = { Icons.Default.Close },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.NumberPassword
+            ),
             onTrailingIconClick = {
                 viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(""))
             },
             onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
         )
-        CustomTextField(
-            text = mDate.value,
-            label = "Date",
-            onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(mDate.value)) },
-            enabled = false,
-            leadingIcon = { Icons.Default.Home },
-            trailingIcon = { Icons.Default.ArrowDropDown },
-            onClick = {
-                Toast.makeText(context, "DatePicking..", Toast.LENGTH_SHORT).show()
-                mDatePickerDialog.show()
-            }
-        )
+
         CustomTextField(
             text = categoryState.text,
             label = categoryState.hint,
@@ -111,6 +125,10 @@ fun AddEditExpanseScreen(
             enabled = false,
             leadingIcon = { Icons.Default.Home },
             trailingIcon = { Icons.Default.ArrowDropDown },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text
+            ),
             onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
         )
         CustomTextField(
@@ -120,15 +138,45 @@ fun AddEditExpanseScreen(
             enabled = false,
             leadingIcon = { Icons.Default.Home },
             trailingIcon = { Icons.Default.ArrowDropDown },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text
+            ),
             onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
         )
-        // complete this code according to given code reference link
-        ChipInputField(onSpacePressed = {
-            println(it.toString())
-        })
+        ChipInputField(
+            tags = ListStringConverter().toListString(tagsState.tagsList),
+            onSpacePressed = {
+                println("tags: $it")
+                viewModel.onEvent(
+                    AddEditExpanseEvent.EnteredTags(
+                        ListStringConverter().fromListString(
+                            it
+                        )
+                    )
+                )
+            })
+        CustomTextField(
+            text = noteState.text,
+            label = noteState.hint,
+            onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredNote(it)) },
+            enabled = true,
+            leadingIcon = { Icons.Default.Home },
+            trailingIcon = { Icons.Default.Close },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text
+            ),
+            onTrailingIconClick = {
+                viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(""))
+            },
+            onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
+        )
         Spacer(modifier = Modifier.height(10.dp))
         Button(
-            onClick = { /*TODO*/ }, modifier = Modifier
+            onClick = {
+                viewModel.onEvent(AddEditExpanseEvent.SaveNote)
+            }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 40.dp)
         ) {
