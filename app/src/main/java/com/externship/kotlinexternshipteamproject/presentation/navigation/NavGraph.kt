@@ -57,12 +57,4 @@ fun NavGraph(
             })
         }
     }
-
-    NavHost(navController = navController,
-        startDestination = Screen.HomeScreen.route,
-        enterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None }) {
-
-
-    }
 }
