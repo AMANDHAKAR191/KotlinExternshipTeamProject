@@ -34,7 +34,7 @@ import java.util.Date
 @Composable
 fun AddEditExpanseScreen(
     viewModel: AddEditExpanseViewModel = hiltViewModel(),
-    navigateToProfileScreen: () -> Unit
+    navigateToHomeScreen: () -> Unit
 ) {
     val dateState = viewModel.date.value
     val amountState = viewModel.amount.value
@@ -80,7 +80,6 @@ fun AddEditExpanseScreen(
                 mDate.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
             }, mYear, mMonth, mDay
         )
-        //
 
 
         Text(text = "Add Edit Screen")
@@ -98,7 +97,11 @@ fun AddEditExpanseScreen(
             onClick = {
                 Toast.makeText(context, "DatePicking..", Toast.LENGTH_SHORT).show()
                 mDatePickerDialog.show()
-                viewModel.onEvent(AddEditExpanseEvent.EnteredDate(mDate.value))
+                mDatePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
+                    mDate.value = "$dayOfMonth/${mMonth + 1}/$mYear"
+                    viewModel.onEvent(AddEditExpanseEvent.EnteredDate(mDate.value))
+                }
+
             }
         )
         CustomTextField(
@@ -176,6 +179,7 @@ fun AddEditExpanseScreen(
         Button(
             onClick = {
                 viewModel.onEvent(AddEditExpanseEvent.SaveNote)
+                navigateToHomeScreen()
             }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 40.dp)

@@ -26,6 +26,7 @@ object Constants {
     const val AUTH_SCREEN = "Authentication"
     const val PROFILE_SCREEN = "Profile"
     const val ADD_EDIT_EXPANSE_SCREEN = "AddEditExpanse"
+    const val HOME_SCREEN = "HomeScreen"
 
     //Messages
     const val REVOKE_ACCESS_MESSAGE = "You need to re-authenticate before revoking the access."

@@ -22,11 +22,11 @@ class AddEditExpanseViewModel @Inject constructor(
     private val expanseUseCases: ExpanseUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    val sdf = SimpleDateFormat("dd MM yyyy", Locale.getDefault())
+    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     private val _date = mutableStateOf(
         ExpanseTextFieldState(
             hint = "Date",
-            text = sdf.format(Date()).toString()
+            text = sdf.format(Date())
         )
     )
     val date: State<ExpanseTextFieldState> = _date

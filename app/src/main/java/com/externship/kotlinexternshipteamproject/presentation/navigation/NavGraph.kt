@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpanseScreen
 import com.externship.kotlinexternshipteamproject.presentation.auth.AuthScreen
+import com.externship.kotlinexternshipteamproject.presentation.home.HomeScreen
 import com.externship.kotlinexternshipteamproject.presentation.navigation.Screen.AuthScreen
 import com.externship.kotlinexternshipteamproject.presentation.navigation.Screen.ProfileScreen
 import com.externship.kotlinexternshipteamproject.presentation.profile.ProfileScreen
@@ -29,7 +30,7 @@ fun NavGraph(
         ) {
             AuthScreen(
                 navigateToProfileScreen = {
-                    navController.navigate(Screen.AddEditExpanseScreen.route)
+                    navController.navigate(Screen.HomeScreen.route)
                 }
             )
         }
@@ -44,10 +45,24 @@ fun NavGraph(
             )
         }
         composable(route = Screen.AddEditExpanseScreen.route) {
-            AddEditExpanseScreen(navigateToProfileScreen = {
+            AddEditExpanseScreen(navigateToHomeScreen = {
                 navController.popBackStack()
-                navController.navigate(AuthScreen.route)
+                navController.navigate(Screen.HomeScreen.route)
             })
         }
+        composable(route = Screen.HomeScreen.route) {
+            HomeScreen(navigateToAddEditExpanseScreen = {
+                navController.popBackStack()
+                navController.navigate(Screen.AddEditExpanseScreen.route)
+            })
+        }
+    }
+
+    NavHost(navController = navController,
+        startDestination = Screen.HomeScreen.route,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None }) {
+
+
     }
 }

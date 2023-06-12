@@ -36,5 +36,5 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun navigateToProfileScreen() =
-        navController.navigate(Screen.AddEditExpanseScreen.route)
+        navController.navigate(Screen.HomeScreen.route)
 }
