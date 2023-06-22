@@ -18,6 +18,7 @@ import com.externship.kotlinexternshipteamproject.domain.use_cases.other.DeleteE
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpanseUseCases
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpanse
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpanses
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.SumOfCurrentMonthExpanses
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -145,6 +146,7 @@ class AppModule {
         return ExpanseUseCases(
             getExpanse = GetExpanse(repository),
             getExpanses = GetExpanses(repository),
+            sumOfCurrentMonthExpanses = SumOfCurrentMonthExpanses(repository),
             addExpanse = AddExpanse(repository),
             deleteExpanse = DeleteExpanse(repository)
         )

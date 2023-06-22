@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -29,7 +28,7 @@ class AddEditExpanseViewModel @Inject constructor(
     private val expanseUseCases: ExpanseUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(), PaymentStatusListener {
-    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val sdf = SimpleDateFormat("YYYY-MM-DD", Locale.getDefault())
 
     private val _expanseType = mutableStateOf(
         ExpanseTextFieldState(
@@ -41,7 +40,7 @@ class AddEditExpanseViewModel @Inject constructor(
     private val _date = mutableStateOf(
         ExpanseTextFieldState(
             hint = "Date",
-            text = sdf.format(Date())
+            date = ""
         )
     )
     val date: State<ExpanseTextFieldState> = _date
@@ -96,11 +95,11 @@ class AddEditExpanseViewModel @Inject constructor(
                     expanseUseCases.getExpanse(expanseId)?.also { expanse ->
                         currentExpanseId = expanse.id
                         _date.value = date.value.copy(
-                            text = expanse.date,
+                            date = expanse.date.toString(),
                             isHintVisible = false
                         )
                         _amount.value = amount.value.copy(
-                            text = expanse.amount,
+                            amount = expanse.amount,
                             isHintVisible = false
                         )
                         _category.value = category.value.copy(
@@ -131,7 +130,8 @@ class AddEditExpanseViewModel @Inject constructor(
 
             is AddEditExpanseEvent.EnteredAmount -> {
                 _amount.value = amount.value.copy(
-                    text = event.value
+                    text = event.value,
+                    amount = event.value.toInt()
                 )
             }
 
@@ -170,8 +170,7 @@ class AddEditExpanseViewModel @Inject constructor(
                     try {
                         expanseUseCases.addExpanse(
                             Expanse(
-                                date = date.value.text,
-                                amount = amount.value.text,
+                                amount = amount.value.amount,
                                 category = category.value.text,
                                 paymentMode = paymentMode.value.text,
                                 tags = tags.value.tagsList,

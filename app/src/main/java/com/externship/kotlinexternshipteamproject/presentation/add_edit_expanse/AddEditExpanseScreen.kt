@@ -165,7 +165,7 @@ fun AddEditExpanseScreen(
                 val mDatePickerDialog = DatePickerDialog(
                     mContext,
                     { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                        mDate.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
+                        mDate.value = "$mYear-${mMonth + 1}-$mMonth"
                     }, mYear, mMonth, mDay
                 )
                 viewModel.onPaymentSuccess = { responseCode, approvalRefNo ->
@@ -179,6 +179,7 @@ fun AddEditExpanseScreen(
                         viewModel.onEvent(AddEditExpanseEvent.SaveNote)
                     }
 
+                    viewModel.onEvent(AddEditExpanseEvent.SaveNote)
                     navigateToHomeScreen()
                 }
                 viewModel.onPaymentFailure = {
@@ -294,14 +295,14 @@ fun AddEditExpanseScreen(
                         Toast.makeText(context, "DatePicking..", Toast.LENGTH_SHORT).show()
                         mDatePickerDialog.show()
                         mDatePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
-                            mDate.value = "$dayOfMonth/${mMonth + 1}/$mYear"
+                            mDate.value = "$mYear-${mMonth + 1}-$dayOfMonth"
                             viewModel.onEvent(AddEditExpanseEvent.EnteredDate(mDate.value))
                         }
 
                     }
                 )
                 CustomTextField(
-                    text = amountState.text,
+                    text = amountState.amount.toString(),
                     label = amountState.hint,
                     onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(it)) },
                     enabled = true,
@@ -379,15 +380,17 @@ fun AddEditExpanseScreen(
                 Button(
                     onClick = {
                         if (chipExpanseValueSelected) {
-                            viewModel.makePayment(
-                                viewModel.amount.value.text,
-                                viewModel.paymentMode.value.text,
-                                viewModel.note.value.text,
-                                viewModel.tags.value.tagsList,
-                                viewModel.date.value.text,
-                                context,
-                                activity
-                            )
+//                            viewModel.makePayment(
+//                                viewModel.amount.value.text,
+//                                viewModel.paymentMode.value.text,
+//                                viewModel.note.value.text,
+//                                viewModel.tags.value.tagsList,
+//                                viewModel.date.value.text,
+//                                context,
+//                                activity
+//                            )
+                            viewModel.onEvent(AddEditExpanseEvent.SaveNote)
+                            navigateToHomeScreen()
                         }
                         if (chipIncomeValueSelected) {
                             viewModel.onEvent(AddEditExpanseEvent.SaveNote)

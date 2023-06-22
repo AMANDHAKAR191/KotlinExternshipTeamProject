@@ -3,6 +3,7 @@ package com.externship.kotlinexternshipteamproject.presentation.home
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,6 +23,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.externship.kotlinexternshipteamproject.presentation.home.componants.CustomProgressIndicator
 import com.externship.kotlinexternshipteamproject.presentation.home.componants.ExpanseItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,6 +34,11 @@ fun HomeScreen(
     navigateToProfileScreen: () -> Unit
 ) {
     val state = viewModel.state.value
+
+    val sumOfCurrentExpanses = viewModel.sumOfCurrentExpanses.value.expansesSumOfCurrentMonth
+
+    viewModel.sumOfCurrentExpanses
+    val progress = sumOfCurrentExpanses.let { (it) }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -49,7 +56,9 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navigateToAddEditExpanseScreen() },
+                onClick = {
+                    navigateToAddEditExpanseScreen()
+                },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 shape = FloatingActionButtonDefaults.shape
             ) {
@@ -64,7 +73,8 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            CustomProgressIndicator(progress = progress)
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 items(state.expanses) { expanse ->
                     ExpanseItem(
                         expanse = expanse,

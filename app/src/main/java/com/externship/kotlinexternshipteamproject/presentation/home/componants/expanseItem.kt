@@ -92,7 +92,7 @@ fun ExpanseItem(
         ) {
             Image(Icons.Default.Home, modifier = Modifier.weight(1f), contentDescription = "Icon")
             Column(modifier = Modifier.weight(6f)) {
-                Text(text = expanse.amount)
+                Text(text = expanse.amount.toString())
                 FlowRow(
                     modifier = Modifier
                         .padding(8.dp)
@@ -107,7 +107,7 @@ fun ExpanseItem(
 //                Text(text = expanse.tags)
             }
             Column(modifier = Modifier.weight(3f)) {
-                Text(text = expanse.date)
+                Text(text = expanse.date.toString())
                 Text(text = expanse.paymentMode)
             }
         }
