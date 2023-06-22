@@ -79,7 +79,6 @@ fun AddEditExpanseScreen(
     val tagsState = viewModel.tags.value
     val noteState = viewModel.note.value
 
-    var buttonLabel = remember { mutableStateOf("") }
     val scanQrCode = remember {
         mutableStateOf(false)
     }
@@ -377,11 +376,6 @@ fun AddEditExpanseScreen(
                     onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                if (chipExpanseValueSelected) {
-                    buttonLabel.value = "Pay"
-                } else {
-                    buttonLabel.value = "Save"
-                }
                 Button(
                     onClick = {
                         if (chipExpanseValueSelected) {
@@ -404,7 +398,8 @@ fun AddEditExpanseScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 40.dp)
                 ) {
-                    Text(text = buttonLabel)
+                    //write a code to change the text "Pay" if chipExpanseValueSelected else "Save"
+                    Text(text = if (chipExpanseValueSelected) "Pay" else "Save")
                 }
 
             }
