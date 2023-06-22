@@ -11,7 +11,12 @@ data class Expanse(
     val paymentMode: String,
     val tags: String,
     val note: String,
+    val type: String,
     @PrimaryKey val id: Int? = null
-)
+) {
+    companion object {
+        val expanseType = listOf("Expanse", "Income")
+    }
+}
 
 class InvalidExpanseException(message: String) : Exception(message)

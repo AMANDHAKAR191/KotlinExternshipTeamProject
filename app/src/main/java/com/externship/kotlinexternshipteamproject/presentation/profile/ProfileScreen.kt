@@ -21,7 +21,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    navigateToAuthScreen: () -> Unit
+    navigateToAuthScreen: () -> Unit,
+    navigateToHomeScreen: () -> Unit
 ) {
     val snackBarHostState = remember {
         SnackbarHostState()
@@ -37,6 +38,9 @@ fun ProfileScreen(
                 },
                 revokeAccess = {
                     viewModel.revokeAccess()
+                },
+                navigateBack = {
+                    navigateToHomeScreen()
                 }
             )
         },

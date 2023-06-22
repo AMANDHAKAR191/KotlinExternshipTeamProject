@@ -1,5 +1,7 @@
 package com.externship.kotlinexternshipteamproject.presentation.navigation
 
+import android.app.Activity
+import android.content.Context
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -17,7 +19,8 @@ import com.externship.kotlinexternshipteamproject.presentation.profile.ProfileSc
 @Composable
 @ExperimentalAnimationApi
 fun NavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    context: Context, activity: Activity
 ) {
     NavHost(
         navController = navController,
@@ -30,6 +33,7 @@ fun NavGraph(
         ) {
             AuthScreen(
                 navigateToProfileScreen = {
+                    navController.popBackStack()
                     navController.navigate(Screen.HomeScreen.route)
                 }
             )
@@ -39,8 +43,10 @@ fun NavGraph(
         ) {
             ProfileScreen(
                 navigateToAuthScreen = {
-                    navController.popBackStack()
                     navController.navigate(AuthScreen.route)
+                },
+                navigateToHomeScreen = {
+                    navController.navigate(Screen.HomeScreen.route)
                 }
             )
         }
@@ -48,12 +54,14 @@ fun NavGraph(
             AddEditExpanseScreen(navigateToHomeScreen = {
                 navController.popBackStack()
                 navController.navigate(Screen.HomeScreen.route)
-            })
+            }, context = context, activity = activity)
         }
         composable(route = Screen.HomeScreen.route) {
             HomeScreen(navigateToAddEditExpanseScreen = {
-                navController.popBackStack()
                 navController.navigate(Screen.AddEditExpanseScreen.route)
+            }, navigateToProfileScreen = {
+                navController.popBackStack()
+                navController.navigate(ProfileScreen.route)
             })
         }
     }

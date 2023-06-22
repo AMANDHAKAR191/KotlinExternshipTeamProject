@@ -2,6 +2,7 @@ package com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse
 
 sealed class AddEditExpanseEvent {
 
+    data class ChangeExpanseType(val value: String) : AddEditExpanseEvent()
     data class EnteredDate(val value: String) : AddEditExpanseEvent()
     data class EnteredAmount(val value: String) : AddEditExpanseEvent()
 
