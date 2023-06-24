@@ -16,10 +16,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.externship.kotlinexternshipteamproject.ui.theme.budgetEqualOrExceed
+import com.externship.kotlinexternshipteamproject.ui.theme.budgetLessLess
+import com.externship.kotlinexternshipteamproject.ui.theme.budgetNear
 
 @Composable
 fun CustomProgressIndicator(
@@ -34,7 +39,23 @@ fun CustomProgressIndicator(
             easing = LinearOutSlowInEasing
         )
     )
-    println("size: $size")
+
+    val progressBarColor = remember { mutableStateOf(budgetLessLess) }
+    val percentage = (progress * 100) / 5000
+    when {
+        percentage >= 100 -> {
+            progressBarColor.value = budgetEqualOrExceed
+        }
+
+        percentage >= 70 -> {
+            progressBarColor.value = budgetNear
+        }
+
+        else -> {
+            progressBarColor.value = budgetLessLess
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,7 +73,7 @@ fun CustomProgressIndicator(
                 .fillMaxWidth(size)
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.primary)
+                .background(progressBarColor.value)
                 .animateContentSize()
         ) {
             Text(

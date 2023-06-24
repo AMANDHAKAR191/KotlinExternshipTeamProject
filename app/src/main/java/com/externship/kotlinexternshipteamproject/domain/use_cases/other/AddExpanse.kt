@@ -10,7 +10,7 @@ class AddExpanse @Inject constructor(
 ) {
     @Throws(InvalidExpanseException::class)
     suspend operator fun invoke(expanse: Expanse) {
-        if (expanse.amount != 0) {
+        if (expanse.amount == 0) {
             throw InvalidExpanseException("The amount of the expanse can't be empty.")
         }
         repository.insertExpanse(expanse)

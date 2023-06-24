@@ -1,6 +1,5 @@
 package com.externship.kotlinexternshipteamproject.presentation.home.componants
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Text
@@ -21,27 +21,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.drawscope.clipPath
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.ColorUtils
 import com.externship.kotlinexternshipteamproject.domain.model.Expanse
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.ListStringConverter
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.componants.Chip
+import com.externship.kotlinexternshipteamproject.ui.theme.expanseColor
+import com.externship.kotlinexternshipteamproject.ui.theme.incomeColor
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ExpanseItem(
     expanse: Expanse,
     modifier: Modifier,
-    cornerRadius: Dp = 10.dp,
-    cutCornerSize: Dp = 30.dp,
     onItemClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
@@ -51,48 +47,33 @@ fun ExpanseItem(
         mutableStateOf<Color>(Color.Green)
     }
     if (expanse.type == "Expanse") {
-        itemColor = Color.Red
+        itemColor = expanseColor
     } else {
-        itemColor = Color.Green
+        itemColor = incomeColor
     }
 
-    Box(modifier = modifier) {
-        Canvas(modifier = Modifier.matchParentSize()) {
-            val clipPath = Path().apply {
-                lineTo(size.width - cutCornerSize.toPx(), 0f)
-                lineTo(size.width, cutCornerSize.toPx())
-                lineTo(size.width, size.height)
-                lineTo(0f, size.height)
-                close()
-            }
-
-            clipPath(clipPath) {
-                drawRoundRect(
-                    color = Color.Transparent,
-                    size = size,
-                    cornerRadius = CornerRadius(cornerRadius.toPx())
+    Box(modifier = modifier
+        .clickable { onItemClick() }
+        .padding(vertical = 10.dp)
+        .background(itemColor, shape = RectangleShape)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 5.dp)
+            .padding(top = 5.dp)) {
+            Row(modifier = Modifier) {
+                Image(
+                    Icons.Default.Home,
+                    modifier = Modifier.weight(1f),
+                    contentDescription = "Icon"
                 )
-                drawRoundRect(
-                    color = Color(
-                        ColorUtils.blendARGB(0x000000, 0x000000, 0.2f)
-                    ),
-                    topLeft = Offset(size.width - cutCornerSize.toPx(), -100f),
-                    size = Size(cutCornerSize.toPx() + 100f, cutCornerSize.toPx() + 100f),
-                    cornerRadius = CornerRadius(cornerRadius.toPx())
-                )
+                Text(text = expanse.amount.toString(), modifier = Modifier.weight(5f))
+                Text(text = formatDate(expanse.date), modifier = Modifier.weight(3f))
+//                Text(text = expanse.tags)
             }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .padding(end = 32.dp)
-                .clickable { onItemClick() }
-                .background(itemColor, shape = RectangleShape)
-        ) {
-            Image(Icons.Default.Home, modifier = Modifier.weight(1f), contentDescription = "Icon")
-            Column(modifier = Modifier.weight(6f)) {
-                Text(text = expanse.amount.toString())
+            Row(modifier = Modifier
+                .padding(horizontal = 5.dp)
+                .padding(bottom = 5.dp)) {
+                Text(text = expanse.paymentMode, modifier = Modifier.wrapContentWidth())
                 FlowRow(
                     modifier = Modifier
                         .padding(8.dp)
@@ -104,12 +85,13 @@ fun ExpanseItem(
                         })
                     }
                 }
-//                Text(text = expanse.tags)
-            }
-            Column(modifier = Modifier.weight(3f)) {
-                Text(text = expanse.date.toString())
-                Text(text = expanse.paymentMode)
             }
         }
     }
+}
+
+fun formatDate(date: Date): String {
+    val dateFormat = SimpleDateFormat("dd MMMM", Locale.ENGLISH)
+    val formattedDate = date.let { dateFormat.format(it) }
+    return formattedDate.toString()
 }

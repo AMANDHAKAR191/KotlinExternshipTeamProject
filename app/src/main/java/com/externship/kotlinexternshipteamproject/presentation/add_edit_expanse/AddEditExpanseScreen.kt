@@ -58,6 +58,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.componants.CustomTextField
 import java.util.Calendar
@@ -304,7 +305,11 @@ fun AddEditExpanseScreen(
                 CustomTextField(
                     text = amountState.amount.toString(),
                     label = amountState.hint,
-                    onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(it)) },
+                    onValueChange = {
+                        if (it.isDigitsOnly()) {
+                            viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(it))
+                        }
+                    },
                     enabled = true,
                     leadingIcon = { Icons.Default.Home },
                     trailingIcon = { Icons.Default.Close },

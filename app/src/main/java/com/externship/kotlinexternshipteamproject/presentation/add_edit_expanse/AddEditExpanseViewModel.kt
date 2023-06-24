@@ -131,7 +131,7 @@ class AddEditExpanseViewModel @Inject constructor(
             is AddEditExpanseEvent.EnteredAmount -> {
                 _amount.value = amount.value.copy(
                     text = event.value,
-                    amount = event.value.toInt()
+                    amount = event.value.toIntOrNull() ?: 0
                 )
             }
 
@@ -166,6 +166,7 @@ class AddEditExpanseViewModel @Inject constructor(
             }
 
             is AddEditExpanseEvent.SaveNote -> {
+                println(amount.value.amount)
                 viewModelScope.launch {
                     try {
                         expanseUseCases.addExpanse(
