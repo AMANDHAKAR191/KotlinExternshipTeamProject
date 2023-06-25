@@ -13,6 +13,9 @@ import com.externship.kotlinexternshipteamproject.data.repository.ProfileReposit
 import com.externship.kotlinexternshipteamproject.domain.repository.AuthRepository
 import com.externship.kotlinexternshipteamproject.domain.repository.ExpanseRepository
 import com.externship.kotlinexternshipteamproject.domain.repository.ProfileRepository
+import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.AuthUseCases
+import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.GetBudgetUseCase
+import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.SaveBudgetUseCase
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.AddExpanse
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.DeleteExpanse
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpanseUseCases
@@ -27,8 +30,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
@@ -45,7 +48,7 @@ class AppModule {
     fun provideFirebaseAuth() = Firebase.auth
 
     @Provides
-    fun provideFirebaseFirestore() = Firebase.firestore
+    fun provideFirebaseDatabase() = Firebase.database
 
     @Provides
     fun provideOneTapClient(
@@ -104,7 +107,7 @@ class AppModule {
         signInRequest: BeginSignInRequest,
         @Named(SIGN_UP_REQUEST)
         signUpRequest: BeginSignInRequest,
-        db: FirebaseFirestore
+        db: FirebaseDatabase
     ): AuthRepository = AuthRepositoryImpl(
         auth = auth,
         oneTapClient = oneTapClient,
@@ -118,7 +121,7 @@ class AppModule {
         auth: FirebaseAuth,
         oneTapClient: SignInClient,
         signInClient: GoogleSignInClient,
-        db: FirebaseFirestore
+        db: FirebaseDatabase
     ): ProfileRepository = ProfileRepositoryImpl(
         auth = auth,
         oneTapClient = oneTapClient,
@@ -149,6 +152,14 @@ class AppModule {
             sumOfCurrentMonthExpanses = SumOfCurrentMonthExpanses(repository),
             addExpanse = AddExpanse(repository),
             deleteExpanse = DeleteExpanse(repository)
+        )
+    }
+
+    @Provides
+    fun provideAuthUseCases(repository: AuthRepository): AuthUseCases {
+        return AuthUseCases(
+            getBudgetUseCase = GetBudgetUseCase(repository),
+            saveBudgetUseCase = SaveBudgetUseCase(repository)
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.aman.firebaseauthwithgoogle.presentation.profile.components
+package com.externship.kotlinexternshipteamproject.presentation.profile.components
 
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons

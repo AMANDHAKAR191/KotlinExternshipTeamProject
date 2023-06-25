@@ -43,9 +43,11 @@ fun NavGraph(
         ) {
             ProfileScreen(
                 navigateToAuthScreen = {
+                    navController.popBackStack()
                     navController.navigate(AuthScreen.route)
                 },
                 navigateToHomeScreen = {
+                    navController.popBackStack()
                     navController.navigate(Screen.HomeScreen.route)
                 }
             )
@@ -60,7 +62,6 @@ fun NavGraph(
             HomeScreen(navigateToAddEditExpanseScreen = {
                 navController.navigate(Screen.AddEditExpanseScreen.route)
             }, navigateToProfileScreen = {
-                navController.popBackStack()
                 navController.navigate(ProfileScreen.route)
             })
         }

@@ -4,7 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.externship.kotlinexternshipteamproject.domain.repository.ProfileRepository
+import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.AuthUseCases
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpanseUseCases
+import com.externship.kotlinexternshipteamproject.presentation.profile.BudgetTextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -16,10 +19,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val expanseUseCases: ExpanseUseCases
+    private val expanseUseCases: ExpanseUseCases,
+    private val authUseCases: AuthUseCases,
+    private val profileRepository: ProfileRepository
 ) : ViewModel() {
     private val _state = mutableStateOf(ExpanseState())
     val state: State<ExpanseState> = _state
+
+    val photoUrl get() = profileRepository.photoUrl
+
+    var _budgetAmount = mutableStateOf(
+        BudgetTextFieldState(
+            hint = "Budget"
+        )
+    )
+    var budgetAmount: State<BudgetTextFieldState> = _budgetAmount
 
     private var _sumOfCurrentExpanses = mutableStateOf(ExpanseState())
     var sumOfCurrentExpanses: State<ExpanseState> = _sumOfCurrentExpanses
@@ -30,6 +44,15 @@ class HomeScreenViewModel @Inject constructor(
     init {
         getExpansesSum()
         getExpanses()
+
+        viewModelScope.launch {
+            authUseCases.getBudgetUseCase.invoke().collect {
+                _budgetAmount.value = budgetAmount.value.copy(
+                    amount = it.totalBudgetAmount.toString()
+                )
+                println("budgetAmount1: ${budgetAmount.value.amount}")
+            }
+        }
     }
 
     private fun getExpansesSum() {
@@ -38,7 +61,6 @@ class HomeScreenViewModel @Inject constructor(
             expanseUseCases.sumOfCurrentMonthExpanses.invoke(Date.from(Instant.now())).collect {
                 if (it != null) {
                     _sumOfCurrentExpanses.value.expansesSumOfCurrentMonth = it
-                    println("total expanse $it")
                 }
             }
         }
