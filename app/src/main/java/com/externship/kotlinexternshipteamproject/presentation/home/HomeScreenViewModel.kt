@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.externship.kotlinexternshipteamproject.domain.repository.ProfileRepository
 import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.AuthUseCases
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpanseUseCases
+import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpanseEvent
 import com.externship.kotlinexternshipteamproject.presentation.profile.BudgetTextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -66,8 +67,16 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: ExpanseEvent) {
-        //implement later
+    fun onEvent(event: AddEditExpanseEvent) {
+        when (event) {
+            is AddEditExpanseEvent.DeleteExpanse -> {
+                viewModelScope.launch {
+                    expanseUseCases.deleteExpanse
+                }
+            }
+
+            else -> {}
+        }
     }
 
 

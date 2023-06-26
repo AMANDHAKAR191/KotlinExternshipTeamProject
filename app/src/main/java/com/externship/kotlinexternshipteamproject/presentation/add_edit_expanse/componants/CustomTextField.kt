@@ -21,8 +21,8 @@ fun CustomTextField(
     label: String?,
     onValueChange: (it: String) -> Unit,
     enabled: Boolean,
-    leadingIcon: () -> ImageVector,
-    trailingIcon: () -> ImageVector,
+    leadingIcon: (() -> ImageVector)? = null,
+    trailingIcon: (() -> ImageVector)? = null,
     singleLine: Boolean,
     keyboardOptions: KeyboardOptions,
     onClick: (() -> Unit)? = null,
@@ -37,13 +37,19 @@ fun CustomTextField(
         },
         onValueChange = { onValueChange(it) },
         enabled = enabled,
-        leadingIcon = { Icon(leadingIcon(), contentDescription = "") },
+        leadingIcon = {
+            if (leadingIcon != null) {
+                Icon(leadingIcon(), contentDescription = "")
+            }
+        },
         trailingIcon = {
-            Icon(trailingIcon(), contentDescription = "", modifier = Modifier.clickable {
-                if (onTrailingIconClick != null) {
-                    onTrailingIconClick()
-                }
-            })
+            if (trailingIcon != null) {
+                Icon(trailingIcon(), contentDescription = "", modifier = Modifier.clickable {
+                    if (onTrailingIconClick != null) {
+                        onTrailingIconClick()
+                    }
+                })
+            }
         },
         singleLine = singleLine,
         keyboardOptions = keyboardOptions,

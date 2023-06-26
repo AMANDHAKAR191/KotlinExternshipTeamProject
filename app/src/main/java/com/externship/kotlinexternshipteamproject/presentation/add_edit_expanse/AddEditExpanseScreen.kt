@@ -33,7 +33,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -177,10 +176,10 @@ fun AddEditExpanseScreen(
                     ).show()
                     println("\"responseCode: ${responseCode}\\napprovalRefNo: ${approvalRefNo}\"")
                     if (approvalRefNo.isNotBlank()) {
-                        viewModel.onEvent(AddEditExpanseEvent.SaveNote)
+                        viewModel.onEvent(AddEditExpanseEvent.SaveExpanse)
                     }
 
-                    viewModel.onEvent(AddEditExpanseEvent.SaveNote)
+                    viewModel.onEvent(AddEditExpanseEvent.SaveExpanse)
                     navigateToHomeScreen()
                 }
                 viewModel.onPaymentFailure = {
@@ -279,29 +278,29 @@ fun AddEditExpanseScreen(
                             .padding(all = 10.dp)
                     )
                 }
+//todo work on this later update
+//                CustomTextField(
+//                    text = dateState.text,
+//                    label = dateState.hint,
+//                    onValueChange = {},
+//                    enabled = false,
+//                    leadingIcon = { Icons.Default.Home },
+//                    trailingIcon = { Icons.Default.ArrowDropDown },
+//                    singleLine = true,
+//                    keyboardOptions = KeyboardOptions(
+//                        keyboardType = KeyboardType.Text,
+//                        imeAction = ImeAction.Next
+//                    ),
+//                    onClick = {
+//                        Toast.makeText(context, "DatePicking..", Toast.LENGTH_SHORT).show()
+//                        mDatePickerDialog.show()
+//                        mDatePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
+//                            mDate.value = "$mYear-${mMonth + 1}-$dayOfMonth"
+//                            viewModel.onEvent(AddEditExpanseEvent.EnteredDate(mDate.value))
+//                        }
+//                    }
+//                )
 
-                CustomTextField(
-                    text = dateState.text,
-                    label = dateState.hint,
-                    onValueChange = {},
-                    enabled = false,
-                    leadingIcon = { Icons.Default.Home },
-                    trailingIcon = { Icons.Default.ArrowDropDown },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
-                    ),
-                    onClick = {
-                        Toast.makeText(context, "DatePicking..", Toast.LENGTH_SHORT).show()
-                        mDatePickerDialog.show()
-                        mDatePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
-                            mDate.value = "$mYear-${mMonth + 1}-$dayOfMonth"
-                            viewModel.onEvent(AddEditExpanseEvent.EnteredDate(mDate.value))
-                        }
-
-                    }
-                )
                 CustomTextField(
                     text = amountState.amount.toString(),
                     label = amountState.hint,
@@ -311,7 +310,7 @@ fun AddEditExpanseScreen(
                         }
                     },
                     enabled = true,
-                    leadingIcon = { Icons.Default.Home },
+                    leadingIcon = null,
                     trailingIcon = { Icons.Default.Close },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -329,27 +328,36 @@ fun AddEditExpanseScreen(
                     label = categoryState.hint,
                     onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(it)) },
                     enabled = false,
-                    leadingIcon = { Icons.Default.Home },
+                    leadingIcon = null,
                     trailingIcon = { Icons.Default.ArrowDropDown },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
+                    onClick = {
+                        Toast.makeText(
+                            context,
+                            "This feature is not yet implemented",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 )
                 CustomTextField(
                     text = paymentModeState.text,
                     label = paymentModeState.hint,
                     onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredPaymentMode(it)) },
                     enabled = true,
-                    leadingIcon = { Icons.Default.Home },
-                    trailingIcon = { Icons.Default.ArrowDropDown },
+                    leadingIcon = null,
+                    trailingIcon = { Icons.Default.Close },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
+                    onTrailingIconClick = {
+                        viewModel.onEvent(AddEditExpanseEvent.EnteredPaymentMode(""))
+                    },
                     onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
                 )
                 ChipInputField(
@@ -369,7 +377,7 @@ fun AddEditExpanseScreen(
                     label = noteState.hint,
                     onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredNote(it)) },
                     enabled = true,
-                    leadingIcon = { Icons.Default.Home },
+                    leadingIcon = null,
                     trailingIcon = { Icons.Default.Close },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -377,7 +385,7 @@ fun AddEditExpanseScreen(
                         imeAction = ImeAction.Done
                     ),
                     onTrailingIconClick = {
-                        viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(""))
+                        viewModel.onEvent(AddEditExpanseEvent.EnteredNote(""))
                     },
                     onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
                 )
@@ -385,6 +393,7 @@ fun AddEditExpanseScreen(
                 Button(
                     onClick = {
                         if (chipExpanseValueSelected) {
+//todo uncomment this when final release
 //                            viewModel.makePayment(
 //                                viewModel.amount.value.text,
 //                                viewModel.paymentMode.value.text,
@@ -394,11 +403,11 @@ fun AddEditExpanseScreen(
 //                                context,
 //                                activity
 //                            )
-                            viewModel.onEvent(AddEditExpanseEvent.SaveNote)
+                            viewModel.onEvent(AddEditExpanseEvent.SaveExpanse)
                             navigateToHomeScreen()
                         }
                         if (chipIncomeValueSelected) {
-                            viewModel.onEvent(AddEditExpanseEvent.SaveNote)
+                            viewModel.onEvent(AddEditExpanseEvent.SaveExpanse)
                             navigateToHomeScreen()
                         }
 

@@ -74,7 +74,7 @@ fun ProfileContent(
         Spacer(modifier = Modifier.height(20.dp))
         CustomTextField(
             text = budgetAmount.toString(),
-            label = "Bidget",
+            label = "Budget",
             onValueChange = {
                 onBudgetAmountChanged(it)
             },

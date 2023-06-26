@@ -14,5 +14,6 @@ sealed class AddEditExpanseEvent {
 
     data class EnteredNote(val value: String) : AddEditExpanseEvent()
 
-    object SaveNote : AddEditExpanseEvent()
+    object SaveExpanse : AddEditExpanseEvent()
+    object DeleteExpanse : AddEditExpanseEvent()
 }

@@ -61,7 +61,7 @@ class AddEditExpanseViewModel @Inject constructor(
 
     private val _paymentMode = mutableStateOf(
         ExpanseTextFieldState(
-            hint = "Payment Mode"
+            hint = "Payment Upi"
         )
     )
     val paymentMode: State<ExpanseTextFieldState> = _paymentMode
@@ -74,7 +74,7 @@ class AddEditExpanseViewModel @Inject constructor(
     val tags: State<ExpanseTextFieldState> = _tags
     private val _note = mutableStateOf(
         ExpanseTextFieldState(
-            hint = "Note"
+            hint = "Receiver Name"
         )
     )
     val note: State<ExpanseTextFieldState> = _note
@@ -165,7 +165,7 @@ class AddEditExpanseViewModel @Inject constructor(
                 )
             }
 
-            is AddEditExpanseEvent.SaveNote -> {
+            is AddEditExpanseEvent.SaveExpanse -> {
                 println(amount.value.amount)
                 viewModelScope.launch {
                     try {
