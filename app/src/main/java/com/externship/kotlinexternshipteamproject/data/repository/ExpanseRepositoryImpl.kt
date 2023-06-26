@@ -4,6 +4,7 @@ import com.externship.kotlinexternshipteamproject.data.data_source.ExpanseDao
 import com.externship.kotlinexternshipteamproject.domain.model.Expanse
 import com.externship.kotlinexternshipteamproject.domain.repository.ExpanseRepository
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 class ExpanseRepositoryImpl(
     private val dao: ExpanseDao
@@ -14,6 +15,10 @@ class ExpanseRepositoryImpl(
 
     override suspend fun getExpanseById(id: Int): Expanse? {
         return dao.getExpanseById(id)
+    }
+
+    override suspend fun getSumOfCurrentMonthExpanses(date: Date): Flow<Float?> {
+        return dao.getSumOfCurrentMonthExpanse(date)
     }
 
     override suspend fun insertExpanse(expanse: Expanse) {

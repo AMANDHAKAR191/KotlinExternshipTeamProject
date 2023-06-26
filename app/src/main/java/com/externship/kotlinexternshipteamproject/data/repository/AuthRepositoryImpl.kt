@@ -3,6 +3,7 @@ package com.externship.kotlinexternshipteamproject.data.repository
 import com.externship.kotlinexternshipteamproject.core.Constants.SIGN_IN_REQUEST
 import com.externship.kotlinexternshipteamproject.core.Constants.SIGN_UP_REQUEST
 import com.externship.kotlinexternshipteamproject.core.Constants.USERS
+import com.externship.kotlinexternshipteamproject.domain.model.Budget
 import com.externship.kotlinexternshipteamproject.domain.model.Response
 import com.externship.kotlinexternshipteamproject.domain.model.User
 import com.externship.kotlinexternshipteamproject.domain.repository.AuthRepository
@@ -10,10 +11,14 @@ import com.externship.kotlinexternshipteamproject.domain.repository.OneTapSignIn
 import com.externship.kotlinexternshipteamproject.domain.repository.SignInWithGoogleResponse
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue.serverTimestamp
-import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Named
@@ -27,7 +32,7 @@ class AuthRepositoryImpl @Inject constructor(
     private var signInRequest: BeginSignInRequest,
     @Named(SIGN_UP_REQUEST)
     private var signUpRequest: BeginSignInRequest,
-    private val db: FirebaseFirestore
+    private val db: FirebaseDatabase
 ) : AuthRepository {
     override val isUserAuthenticatedInFirebase = auth.currentUser != null
 
@@ -52,7 +57,7 @@ class AuthRepositoryImpl @Inject constructor(
             val authResult = auth.signInWithCredential(googleCredential).await()
             val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
             if (isNewUser) {
-                addUserToFirestore()
+                addUserToFireStore()
             }
             Response.Success(true)
         } catch (e: Exception) {
@@ -60,7 +65,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun addUserToFirestore() {
+    private suspend fun addUserToFireStore() {
         auth.currentUser?.apply {
             val user = User(
                 displayName,
@@ -68,7 +73,51 @@ class AuthRepositoryImpl @Inject constructor(
                 photoUrl?.toString(),
                 serverTimestamp().toString()
             )
-            db.collection(USERS).document(uid).set(user).await()
+            db.reference.child(USERS).child(uid).setValue(user).await()
         }
     }
+
+    override suspend fun saveBudgetAmountInFirebase(budget: Budget): Flow<Boolean> =
+        callbackFlow {
+            auth.currentUser?.apply {
+                db.reference.child("budgetAmount").child(uid).setValue(budget)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            trySend(true)  // Emit the result to the flow
+                        } else {
+                            trySend(false) // Emit the result to the flow
+                        }
+                    }.addOnFailureListener {
+                        trySend(false)    // Emit the result to the flow
+                    }.await()
+            }
+            awaitClose()
+        }
+
+
+    override suspend fun getBudgetAmountInFirebase(): Flow<Budget> = callbackFlow {
+        auth.currentUser?.apply {
+            val databaseRef = db.reference.child("budgetAmount").child(uid)
+            databaseRef.keepSynced(true)
+            databaseRef.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val dataSnapshot = task.result
+                    println("dataSnapshot: ${dataSnapshot.value}")
+                    if (dataSnapshot != null && dataSnapshot.exists()) {
+                        val budgetAmount = dataSnapshot.getValue(Budget::class.java)
+                        println("budgetAmount: $budgetAmount")
+                        if (budgetAmount != null) {
+                            trySend(budgetAmount)
+                        }
+                    } else {
+                        close(FirebaseException("User not found"))
+                    }
+                } else {
+                    close(task.exception ?: FirebaseException("Failed to fetch budget amount"))
+                }
+            }
+        }
+        awaitClose()
+    }
+
 }

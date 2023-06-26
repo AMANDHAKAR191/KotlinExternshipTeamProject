@@ -1,7 +1,8 @@
-package com.aman.firebaseauthwithgoogle.presentation.profile.components
+package com.externship.kotlinexternshipteamproject.presentation.profile.components
 
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -19,7 +20,8 @@ import com.externship.kotlinexternshipteamproject.core.Constants.SIGN_OUT
 @Composable
 fun ProfileTopBar(
     signOut: () -> Unit,
-    revokeAccess: () -> Unit
+    revokeAccess: () -> Unit,
+    navigateBack: () -> Unit
 ) {
     var openMenu by remember { mutableStateOf(false) }
 
@@ -64,6 +66,11 @@ fun ProfileTopBar(
                         openMenu = !openMenu
                     }
                 )
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = { navigateBack() }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "back")
             }
         }
     )
