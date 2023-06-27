@@ -24,9 +24,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -37,8 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.externship.kotlinexternshipteamproject.domain.model.Expanse
-import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpanseEvent
+import com.externship.kotlinexternshipteamproject.domain.model.Expense
+import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpenseEvent
+import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpenseViewModel
 import com.externship.kotlinexternshipteamproject.presentation.home.componants.CustomProgressIndicator
 import com.externship.kotlinexternshipteamproject.presentation.home.componants.ExpanseItem
 
@@ -50,11 +54,11 @@ fun HomeScreen(
     navigateToProfileScreen: () -> Unit
 ) {
     val state = viewModel.state.value
-
-    val sumOfCurrentExpanses = viewModel.sumOfCurrentExpanses.value.expansesSumOfCurrentMonth
+    val snackbarHostState = remember { SnackbarHostState() }
+    val sumOfCurrentExpanses = viewModel.sumOfCurrentExpenses.value.expensesSumOfCurrentMonth
 
     val openDialog = remember { mutableStateOf(false) }
-    val itemToDelete = remember { mutableStateOf<Expanse?>(null) }
+    val itemToDelete = remember { mutableStateOf<Expense?>(null) }
     println("openDialog: ${openDialog.value}")
     if (openDialog.value) {  //ask confirmation from user to delete the expanse
         AlertDialog(
@@ -66,7 +70,13 @@ fun HomeScreen(
             confirmButton = {
                 Text(text = "Yes,delete",
                     modifier = Modifier.clickable {
-                        itemToDelete.value?.let { viewModel.onEvent(AddEditExpanseEvent.DeleteExpanse) }
+                        itemToDelete.value?.let {
+                            viewModel.onEvent(
+                                AddEditExpenseEvent.DeleteExpense(
+                                    it
+                                )
+                            )
+                        }
                         openDialog.value = false
                     })
             },
@@ -80,11 +90,26 @@ fun HomeScreen(
         )
     }
 
-    viewModel.sumOfCurrentExpanses
+    viewModel.sumOfCurrentExpenses
     val progress = sumOfCurrentExpanses.let { (it) }
     val totalBudget = viewModel.budgetAmount.value.amount
     println("totalBudget: $totalBudget")
+
+    LaunchedEffect(key1 = viewModel.eventFlow) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is AddEditExpenseViewModel.UiEvent.ShowSnackBar -> {
+                    snackbarHostState.showSnackbar(event.message)
+                }
+
+                else -> {}
+            }
+
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier.fillMaxSize(),
         topBar = {
             MediumTopAppBar(
@@ -142,9 +167,9 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(all = 10.dp)
             ) {
-                items(state.expanses) { expanse ->
+                items(state.expense) { expanse ->
                     ExpanseItem(
-                        expanse = expanse,
+                        expense = expanse,
                         modifier = Modifier,
                         onDeleteClick = {
                             itemToDelete.value = expanse

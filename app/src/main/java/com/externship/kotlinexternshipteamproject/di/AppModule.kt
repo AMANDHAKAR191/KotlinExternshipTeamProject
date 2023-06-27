@@ -6,22 +6,22 @@ import androidx.room.Room
 import com.externship.kotlinexternshipteamproject.R
 import com.externship.kotlinexternshipteamproject.core.Constants.SIGN_IN_REQUEST
 import com.externship.kotlinexternshipteamproject.core.Constants.SIGN_UP_REQUEST
-import com.externship.kotlinexternshipteamproject.data.data_source.ExpanseDatabase
+import com.externship.kotlinexternshipteamproject.data.data_source.ExpenseDatabase
 import com.externship.kotlinexternshipteamproject.data.repository.AuthRepositoryImpl
-import com.externship.kotlinexternshipteamproject.data.repository.ExpanseRepositoryImpl
+import com.externship.kotlinexternshipteamproject.data.repository.ExpenseRepositoryImpl
 import com.externship.kotlinexternshipteamproject.data.repository.ProfileRepositoryImpl
 import com.externship.kotlinexternshipteamproject.domain.repository.AuthRepository
-import com.externship.kotlinexternshipteamproject.domain.repository.ExpanseRepository
+import com.externship.kotlinexternshipteamproject.domain.repository.ExpenseRepository
 import com.externship.kotlinexternshipteamproject.domain.repository.ProfileRepository
 import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.AuthUseCases
 import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.GetBudgetUseCase
 import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.SaveBudgetUseCase
-import com.externship.kotlinexternshipteamproject.domain.use_cases.other.AddExpanse
-import com.externship.kotlinexternshipteamproject.domain.use_cases.other.DeleteExpanse
-import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpanseUseCases
-import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpanse
-import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpanses
-import com.externship.kotlinexternshipteamproject.domain.use_cases.other.SumOfCurrentMonthExpanses
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.AddExpense
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.DeleteExpense
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpenseUseCases
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpense
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpenses
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.SumOfCurrentMonthExpenses
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -131,27 +131,27 @@ class AppModule {
 
     //for expanse room
     @Provides
-    fun provideExpanseDataBase(app: Application): ExpanseDatabase {
+    fun provideExpenseDataBase(app: Application): ExpenseDatabase {
         return Room.databaseBuilder(
             app,
-            ExpanseDatabase::class.java,
-            ExpanseDatabase.DATABASE_NAME
+            ExpenseDatabase::class.java,
+            ExpenseDatabase.DATABASE_NAME
         ).build()
     }
 
     @Provides
-    fun provideExpanseRepository(database: ExpanseDatabase): ExpanseRepository {
-        return ExpanseRepositoryImpl(database.expanseDao)
+    fun provideExpenseRepository(database: ExpenseDatabase): ExpenseRepository {
+        return ExpenseRepositoryImpl(database.expenseDao)
     }
 
     @Provides
-    fun provideExpanseUseCases(repository: ExpanseRepository): ExpanseUseCases {
-        return ExpanseUseCases(
-            getExpanse = GetExpanse(repository),
-            getExpanses = GetExpanses(repository),
-            sumOfCurrentMonthExpanses = SumOfCurrentMonthExpanses(repository),
-            addExpanse = AddExpanse(repository),
-            deleteExpanse = DeleteExpanse(repository)
+    fun provideExpenseUseCases(repository: ExpenseRepository): ExpenseUseCases {
+        return ExpenseUseCases(
+            getExpense = GetExpense(repository),
+            getExpenses = GetExpenses(repository),
+            sumOfCurrentMonthExpenses = SumOfCurrentMonthExpenses(repository),
+            addExpense = AddExpense(repository),
+            deleteExpense = DeleteExpense(repository)
         )
     }
 

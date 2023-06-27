@@ -52,7 +52,7 @@ fun NavGraph(
                 }
             )
         }
-        composable(route = Screen.AddEditExpanseScreen.route) {
+        composable(route = Screen.AddEditExpenseScreen.route) {
             AddEditExpanseScreen(navigateToHomeScreen = {
                 navController.popBackStack()
                 navController.navigate(Screen.HomeScreen.route)
@@ -60,7 +60,7 @@ fun NavGraph(
         }
         composable(route = Screen.HomeScreen.route) {
             HomeScreen(navigateToAddEditExpanseScreen = {
-                navController.navigate(Screen.AddEditExpanseScreen.route)
+                navController.navigate(Screen.AddEditExpenseScreen.route)
             }, navigateToProfileScreen = {
                 navController.navigate(ProfileScreen.route)
             })

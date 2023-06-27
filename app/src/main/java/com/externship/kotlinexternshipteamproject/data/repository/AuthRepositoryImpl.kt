@@ -110,7 +110,7 @@ class AuthRepositoryImpl @Inject constructor(
                             trySend(budgetAmount)
                         }
                     } else {
-                        close(FirebaseException("User not found"))
+//                        close(FirebaseException("User not found"))
                     }
                 } else {
                     close(task.exception ?: FirebaseException("Failed to fetch budget amount"))

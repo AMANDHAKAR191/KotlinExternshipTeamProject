@@ -6,11 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.externship.kotlinexternshipteamproject.domain.repository.ProfileRepository
 import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.AuthUseCases
-import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpanseUseCases
-import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpanseEvent
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpenseUseCases
+import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpenseEvent
+import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpenseViewModel
 import com.externship.kotlinexternshipteamproject.presentation.profile.BudgetTextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -20,12 +23,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val expanseUseCases: ExpanseUseCases,
+    private val expenseUseCases: ExpenseUseCases,
     private val authUseCases: AuthUseCases,
     private val profileRepository: ProfileRepository
 ) : ViewModel() {
-    private val _state = mutableStateOf(ExpanseState())
-    val state: State<ExpanseState> = _state
+    private val _state = mutableStateOf(ExpenseState())
+    val state: State<ExpenseState> = _state
 
     val photoUrl get() = profileRepository.photoUrl
 
@@ -36,15 +39,18 @@ class HomeScreenViewModel @Inject constructor(
     )
     var budgetAmount: State<BudgetTextFieldState> = _budgetAmount
 
-    private var _sumOfCurrentExpanses = mutableStateOf(ExpanseState())
-    var sumOfCurrentExpanses: State<ExpanseState> = _sumOfCurrentExpanses
+    private var _sumOfCurrentExpenses = mutableStateOf(ExpenseState())
+    var sumOfCurrentExpenses: State<ExpenseState> = _sumOfCurrentExpenses
 
-    private var getExpansesJob: Job? = null
-    private var getExpansesSumJob: Job? = null
+    private val _eventFlow = MutableSharedFlow<AddEditExpenseViewModel.UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
+    private var getExpensesJob: Job? = null
+    private var getExpensesSumJob: Job? = null
 
     init {
-        getExpansesSum()
-        getExpanses()
+        getExpensesSum()
+        getExpenses()
 
         viewModelScope.launch {
             authUseCases.getBudgetUseCase.invoke().collect {
@@ -56,22 +62,27 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-    private fun getExpansesSum() {
+    private fun getExpensesSum() {
 
         viewModelScope.launch {
-            expanseUseCases.sumOfCurrentMonthExpanses.invoke(Date.from(Instant.now())).collect {
+            expenseUseCases.sumOfCurrentMonthExpenses.invoke(Date.from(Instant.now())).collect {
                 if (it != null) {
-                    _sumOfCurrentExpanses.value.expansesSumOfCurrentMonth = it
+                    _sumOfCurrentExpenses.value.expensesSumOfCurrentMonth = it
                 }
             }
         }
     }
 
-    fun onEvent(event: AddEditExpanseEvent) {
+    fun onEvent(event: AddEditExpenseEvent) {
         when (event) {
-            is AddEditExpanseEvent.DeleteExpanse -> {
+            is AddEditExpenseEvent.DeleteExpense -> {
                 viewModelScope.launch {
-                    expanseUseCases.deleteExpanse
+                    expenseUseCases.deleteExpense.invoke(event.expense)
+                    _eventFlow.emit(
+                        AddEditExpenseViewModel.UiEvent.ShowSnackBar(
+                            message = "Expense deleted"
+                        )
+                    )
                 }
             }
 
@@ -80,12 +91,12 @@ class HomeScreenViewModel @Inject constructor(
     }
 
 
-    private fun getExpanses() {
-        getExpansesJob?.cancel()
-        getExpansesJob = expanseUseCases.getExpanses()
+    private fun getExpenses() {
+        getExpensesJob?.cancel()
+        getExpensesJob = expenseUseCases.getExpenses()
             .onEach { expanses ->
                 _state.value = state.value.copy(
-                    expanses = expanses
+                    expense = expanses
                 )
             }.launchIn(viewModelScope)
     }
