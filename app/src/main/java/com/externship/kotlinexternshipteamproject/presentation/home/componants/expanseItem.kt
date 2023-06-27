@@ -24,7 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.externship.kotlinexternshipteamproject.domain.model.Expanse
+import com.externship.kotlinexternshipteamproject.domain.model.Expense
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.ListStringConverter
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.componants.Chip
 import com.externship.kotlinexternshipteamproject.ui.theme.incomeColor
@@ -35,16 +35,16 @@ import java.util.Locale
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ExpanseItem(
-    expanse: Expanse,
+    expense: Expense,
     modifier: Modifier,
     onItemClick: () -> Unit,
     onDeleteClick: @Composable () -> Unit
 ) {
 
-    val tags: List<String> = ListStringConverter().toListString(expanse.tags)
+    val tags: List<String> = ListStringConverter().toListString(expense.tags)
     var itemColor by remember { mutableStateOf<Color>(Color.Transparent) }
     var isDeleteItem by remember { mutableStateOf(false) }
-    if (expanse.type == "Expanse") {
+    if (expense.type == "Expanse") {
 
     } else {
         itemColor = incomeColor
@@ -66,8 +66,8 @@ fun ExpanseItem(
                     .padding(top = 5.dp)
             ) {
                 Row(modifier = Modifier) {
-                    Text(text = expanse.amount.toString(), modifier = Modifier.weight(5f))
-                    Text(text = formatDate(expanse.date), modifier = Modifier.weight(3f))
+                    Text(text = expense.amount.toString(), modifier = Modifier.weight(5f))
+                    Text(text = formatDate(expense.date), modifier = Modifier.weight(3f))
                     Image(
                         Icons.Default.Delete,
                         modifier = Modifier
@@ -83,7 +83,7 @@ fun ExpanseItem(
                         .padding(horizontal = 5.dp)
                         .padding(bottom = 5.dp)
                 ) {
-                    Text(text = expanse.paymentMode, modifier = Modifier.wrapContentWidth())
+                    Text(text = expense.paymentMode, modifier = Modifier.wrapContentWidth())
                     FlowRow(
                         modifier = Modifier
                             .padding(8.dp)

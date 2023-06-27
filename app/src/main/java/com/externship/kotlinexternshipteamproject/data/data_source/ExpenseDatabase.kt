@@ -4,18 +4,19 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.externship.kotlinexternshipteamproject.domain.model.DateConverter
-import com.externship.kotlinexternshipteamproject.domain.model.Expanse
+import com.externship.kotlinexternshipteamproject.domain.model.Expense
 
 
 @Database(
-    entities = [Expanse::class],
-    version = 1
+    entities = [Expense::class],
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(DateConverter::class)
-abstract class ExpanseDatabase : RoomDatabase() {
-    abstract val expanseDao: ExpanseDao
+abstract class ExpenseDatabase : RoomDatabase() {
+    abstract val expenseDao: ExpenseDao
 
     companion object {
-        const val DATABASE_NAME = "expanse_database"
+        const val DATABASE_NAME = "expense_database"
     }
 }

@@ -1,3 +1,3 @@
 package com.externship.kotlinexternshipteamproject.presentation.home
 
-class ExpanseEvent
+class ExpenseEvent

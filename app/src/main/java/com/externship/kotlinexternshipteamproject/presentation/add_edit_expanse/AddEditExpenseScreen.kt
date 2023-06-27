@@ -40,6 +40,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -66,18 +68,21 @@ import java.util.Date
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditExpanseScreen(
-    viewModel: AddEditExpanseViewModel = hiltViewModel(),
+    viewModel: AddEditExpenseViewModel = hiltViewModel(),
     navigateToHomeScreen: () -> Unit,
     context: Context,
     activity: Activity
 ) {
-    val expanseTypeState = viewModel.expanseType.value
+    val expenseTypeState = viewModel.expenseType.value
     val dateState = viewModel.date.value
     val amountState = viewModel.amount.value
     val categoryState = viewModel.category.value
     val paymentModeState = viewModel.paymentMode.value
     val tagsState = viewModel.tags.value
     val noteState = viewModel.note.value
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
 
     val scanQrCode = remember {
         mutableStateOf(false)
@@ -113,9 +118,24 @@ fun AddEditExpanseScreen(
         launcher.launch(Manifest.permission.CAMERA)
     }
 
+    LaunchedEffect(key1 = viewModel.eventFlow) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is AddEditExpenseViewModel.UiEvent.ShowSnackBar -> {
+                    snackbarHostState.showSnackbar(event.message)
+                }
+
+                else -> {}
+            }
+
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text(text = "Add Expanse") },
+            TopAppBar(
+                title = { Text(text = "Add Expanse") },
                 actions = {
                     Image(
                         Icons.Default.QrCodeScanner,
@@ -176,10 +196,10 @@ fun AddEditExpanseScreen(
                     ).show()
                     println("\"responseCode: ${responseCode}\\napprovalRefNo: ${approvalRefNo}\"")
                     if (approvalRefNo.isNotBlank()) {
-                        viewModel.onEvent(AddEditExpanseEvent.SaveExpanse)
+                        viewModel.onEvent(AddEditExpenseEvent.SaveExpense)
                     }
 
-                    viewModel.onEvent(AddEditExpanseEvent.SaveExpanse)
+                    viewModel.onEvent(AddEditExpenseEvent.SaveExpense)
                     navigateToHomeScreen()
                 }
                 viewModel.onPaymentFailure = {
@@ -218,12 +238,12 @@ fun AddEditExpanseScreen(
                                                     println("Payment Address1: $paymentAddress")
                                                     println("Payee Name1: $payeeName")
                                                     viewModel.onEvent(
-                                                        AddEditExpanseEvent.EnteredPaymentMode(
+                                                        AddEditExpenseEvent.EnteredPaymentMode(
                                                             paymentAddress
                                                         )
                                                     )
                                                     viewModel.onEvent(
-                                                        AddEditExpanseEvent.EnteredNote(
+                                                        AddEditExpenseEvent.EnteredNote(
                                                             "$payeeName "
                                                         )
                                                     )
@@ -257,7 +277,7 @@ fun AddEditExpanseScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     InputChip(selected = chipExpanseValueSelected, onClick = {
-                        viewModel.onEvent(AddEditExpanseEvent.ChangeExpanseType("Expanse"))
+                        viewModel.onEvent(AddEditExpenseEvent.ChangeExpenseType("Expanse"))
                         chipExpanseValueSelected = !chipExpanseValueSelected
                         if (chipIncomeValueSelected) {
                             chipIncomeValueSelected = !chipIncomeValueSelected
@@ -268,7 +288,7 @@ fun AddEditExpanseScreen(
                             .padding(all = 10.dp)
                     )
                     InputChip(selected = chipIncomeValueSelected, onClick = {
-                        viewModel.onEvent(AddEditExpanseEvent.ChangeExpanseType("Income"))
+                        viewModel.onEvent(AddEditExpenseEvent.ChangeExpenseType("Income"))
                         chipIncomeValueSelected = !chipIncomeValueSelected
                         if (chipExpanseValueSelected) {
                             chipExpanseValueSelected = !chipExpanseValueSelected
@@ -306,7 +326,7 @@ fun AddEditExpanseScreen(
                     label = amountState.hint,
                     onValueChange = {
                         if (it.isDigitsOnly()) {
-                            viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(it))
+                            viewModel.onEvent(AddEditExpenseEvent.EnteredAmount(it))
                         }
                     },
                     enabled = true,
@@ -318,7 +338,7 @@ fun AddEditExpanseScreen(
                         imeAction = ImeAction.Next
                     ),
                     onTrailingIconClick = {
-                        viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(""))
+                        viewModel.onEvent(AddEditExpenseEvent.EnteredAmount(""))
                     },
                     onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
                 )
@@ -326,7 +346,7 @@ fun AddEditExpanseScreen(
                 CustomTextField(
                     text = categoryState.text,
                     label = categoryState.hint,
-                    onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredAmount(it)) },
+                    onValueChange = { viewModel.onEvent(AddEditExpenseEvent.EnteredAmount(it)) },
                     enabled = false,
                     leadingIcon = null,
                     trailingIcon = { Icons.Default.ArrowDropDown },
@@ -346,7 +366,7 @@ fun AddEditExpanseScreen(
                 CustomTextField(
                     text = paymentModeState.text,
                     label = paymentModeState.hint,
-                    onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredPaymentMode(it)) },
+                    onValueChange = { viewModel.onEvent(AddEditExpenseEvent.EnteredPaymentMode(it)) },
                     enabled = true,
                     leadingIcon = null,
                     trailingIcon = { Icons.Default.Close },
@@ -356,7 +376,7 @@ fun AddEditExpanseScreen(
                         imeAction = ImeAction.Next
                     ),
                     onTrailingIconClick = {
-                        viewModel.onEvent(AddEditExpanseEvent.EnteredPaymentMode(""))
+                        viewModel.onEvent(AddEditExpenseEvent.EnteredPaymentMode(""))
                     },
                     onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
                 )
@@ -365,7 +385,7 @@ fun AddEditExpanseScreen(
                     onSpacePressed = {
                         println("tags: $it")
                         viewModel.onEvent(
-                            AddEditExpanseEvent.EnteredTags(
+                            AddEditExpenseEvent.EnteredTags(
                                 ListStringConverter().fromListString(
                                     it
                                 )
@@ -375,7 +395,7 @@ fun AddEditExpanseScreen(
                 CustomTextField(
                     text = noteState.text,
                     label = noteState.hint,
-                    onValueChange = { viewModel.onEvent(AddEditExpanseEvent.EnteredNote(it)) },
+                    onValueChange = { viewModel.onEvent(AddEditExpenseEvent.EnteredNote(it)) },
                     enabled = true,
                     leadingIcon = null,
                     trailingIcon = { Icons.Default.Close },
@@ -385,7 +405,7 @@ fun AddEditExpanseScreen(
                         imeAction = ImeAction.Done
                     ),
                     onTrailingIconClick = {
-                        viewModel.onEvent(AddEditExpanseEvent.EnteredNote(""))
+                        viewModel.onEvent(AddEditExpenseEvent.EnteredNote(""))
                     },
                     onClick = { Toast.makeText(context, "Clicked..", Toast.LENGTH_SHORT).show() }
                 )
@@ -403,11 +423,11 @@ fun AddEditExpanseScreen(
 //                                context,
 //                                activity
 //                            )
-                            viewModel.onEvent(AddEditExpanseEvent.SaveExpanse)
+                            viewModel.onEvent(AddEditExpenseEvent.SaveExpense)
                             navigateToHomeScreen()
                         }
                         if (chipIncomeValueSelected) {
-                            viewModel.onEvent(AddEditExpanseEvent.SaveExpanse)
+                            viewModel.onEvent(AddEditExpenseEvent.SaveExpense)
                             navigateToHomeScreen()
                         }
 

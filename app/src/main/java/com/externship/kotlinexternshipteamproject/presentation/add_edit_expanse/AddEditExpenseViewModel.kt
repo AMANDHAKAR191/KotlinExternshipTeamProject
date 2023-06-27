@@ -4,13 +4,15 @@ import android.app.Activity
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.externship.kotlinexternshipteamproject.domain.model.Expanse
-import com.externship.kotlinexternshipteamproject.domain.model.InvalidExpanseException
-import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpanseUseCases
+import com.externship.kotlinexternshipteamproject.domain.model.Expense
+import com.externship.kotlinexternshipteamproject.domain.model.InvalidExpenseException
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpenseUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.shreyaspatil.easyupipayment.EasyUpiPayment
 import dev.shreyaspatil.easyupipayment.listener.PaymentStatusListener
@@ -24,60 +26,63 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class AddEditExpanseViewModel @Inject constructor(
-    private val expanseUseCases: ExpanseUseCases,
+class AddEditExpenseViewModel @Inject constructor(
+    private val expenseUseCases: ExpenseUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(), PaymentStatusListener {
     val sdf = SimpleDateFormat("YYYY-MM-DD", Locale.getDefault())
 
-    private val _expanseType = mutableStateOf(
-        ExpanseTextFieldState(
-            text = Expanse.expanseType[1]
+    var isSnackBarShowing: Boolean by mutableStateOf(false)
+        private set
+
+    private val _expenseType = mutableStateOf(
+        ExpenseTextFieldState(
+            text = Expense.expanseType[1]
         )
     )
-    val expanseType: State<ExpanseTextFieldState> = _expanseType
+    val expenseType: State<ExpenseTextFieldState> = _expenseType
 
     private val _date = mutableStateOf(
-        ExpanseTextFieldState(
+        ExpenseTextFieldState(
             hint = "Date",
             date = ""
         )
     )
-    val date: State<ExpanseTextFieldState> = _date
+    val date: State<ExpenseTextFieldState> = _date
 
     private val _amount = mutableStateOf(
-        ExpanseTextFieldState(
+        ExpenseTextFieldState(
             hint = "Amount"
         )
     )
-    val amount: State<ExpanseTextFieldState> = _amount
+    val amount: State<ExpenseTextFieldState> = _amount
 
     private val _category = mutableStateOf(
-        ExpanseTextFieldState(
+        ExpenseTextFieldState(
             hint = "Category"
         )
     )
-    val category: State<ExpanseTextFieldState> = _category
+    val category: State<ExpenseTextFieldState> = _category
 
     private val _paymentMode = mutableStateOf(
-        ExpanseTextFieldState(
+        ExpenseTextFieldState(
             hint = "Payment Upi"
         )
     )
-    val paymentMode: State<ExpanseTextFieldState> = _paymentMode
+    val paymentMode: State<ExpenseTextFieldState> = _paymentMode
 
     private val _tags = mutableStateOf(
-        ExpanseTextFieldState(
+        ExpenseTextFieldState(
             hint = "Tags"
         )
     )
-    val tags: State<ExpanseTextFieldState> = _tags
+    val tags: State<ExpenseTextFieldState> = _tags
     private val _note = mutableStateOf(
-        ExpanseTextFieldState(
+        ExpenseTextFieldState(
             hint = "Receiver Name"
         )
     )
-    val note: State<ExpanseTextFieldState> = _note
+    val note: State<ExpenseTextFieldState> = _note
 
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -92,7 +97,7 @@ class AddEditExpanseViewModel @Inject constructor(
         savedStateHandle.get<Int>("expanseId")?.let { expanseId ->
             if (expanseId != -1) {
                 viewModelScope.launch {
-                    expanseUseCases.getExpanse(expanseId)?.also { expanse ->
+                    expenseUseCases.getExpense(expanseId)?.also { expanse ->
                         currentExpanseId = expanse.id
                         _date.value = date.value.copy(
                             date = expanse.date.toString(),
@@ -120,74 +125,106 @@ class AddEditExpanseViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: AddEditExpanseEvent) {
+    fun onEvent(event: AddEditExpenseEvent) {
         when (event) {
-            is AddEditExpanseEvent.EnteredDate -> {
+            is AddEditExpenseEvent.EnteredDate -> {
                 _date.value = date.value.copy(
                     text = event.value
                 )
             }
 
-            is AddEditExpanseEvent.EnteredAmount -> {
+            is AddEditExpenseEvent.EnteredAmount -> {
                 _amount.value = amount.value.copy(
                     text = event.value,
                     amount = event.value.toIntOrNull() ?: 0
                 )
             }
 
-            is AddEditExpanseEvent.EnteredCategory -> {
+            is AddEditExpenseEvent.EnteredCategory -> {
                 _category.value = category.value.copy(
                     text = event.value
                 )
             }
 
-            is AddEditExpanseEvent.EnteredPaymentMode -> {
+            is AddEditExpenseEvent.EnteredPaymentMode -> {
                 _paymentMode.value = paymentMode.value.copy(
                     text = event.value
                 )
             }
 
-            is AddEditExpanseEvent.EnteredTags -> {
+            is AddEditExpenseEvent.EnteredTags -> {
                 _tags.value = tags.value.copy(
                     tagsList = event.value
                 )
             }
 
-            is AddEditExpanseEvent.EnteredNote -> {
+            is AddEditExpenseEvent.EnteredNote -> {
                 _note.value = note.value.copy(
                     text = event.value
                 )
             }
 
-            is AddEditExpanseEvent.ChangeExpanseType -> {
-                _expanseType.value = expanseType.value.copy(
+            is AddEditExpenseEvent.ChangeExpenseType -> {
+                _expenseType.value = expenseType.value.copy(
                     text = event.value
                 )
             }
 
-            is AddEditExpanseEvent.SaveExpanse -> {
+            is AddEditExpenseEvent.SaveExpense -> {
                 println(amount.value.amount)
                 viewModelScope.launch {
+                    println()
                     try {
-                        expanseUseCases.addExpanse(
-                            Expanse(
+                        expenseUseCases.addExpense(
+                            Expense(
                                 amount = amount.value.amount,
                                 category = category.value.text,
                                 paymentMode = paymentMode.value.text,
                                 tags = tags.value.tagsList,
                                 note = note.value.text,
-                                type = expanseType.value.text
+                                type = expenseType.value.text
                             )
                         )
-                    } catch (e: InvalidExpanseException) {
                         _eventFlow.emit(
                             UiEvent.ShowSnackBar(
-                                message = e.message ?: "Couldn't save Expanse"
+                                message = "Expense saved"
+                            )
+                        )
+                    } catch (e: InvalidExpenseException) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackBar(
+                                message = e.message ?: "Couldn't save Expense"
                             )
                         )
                     }
 
                 }
+//                viewModelScope.launch {
+//                    try {
+//                        expenseUseCases.addExpense(
+//                            Expense(
+//                                amount = amount.value.amount,
+//                                category = category.value.text,
+//                                paymentMode = paymentMode.value.text,
+//                                tags = tags.value.tagsList,
+//                                note = note.value.text,
+//                                type = expenseType.value.text
+//                            )
+//                        )
+//                        _eventFlow.emit(
+//                            UiEvent.ShowSnackBar(
+//                                message = "Expense saved"
+//                            )
+//                        )
+//                    } catch (e: InvalidExpenseException) {
+//                        _eventFlow.emit(
+//                            UiEvent.ShowSnackBar(
+//                                message = e.message ?: "Couldn't save Expense"
+//                            )
+//                        )
+//                    }
+//
+//                }
             }
 
             else -> {}

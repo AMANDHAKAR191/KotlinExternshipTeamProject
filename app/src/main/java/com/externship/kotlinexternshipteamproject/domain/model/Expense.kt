@@ -7,7 +7,7 @@ import java.time.Instant
 import java.util.Date
 
 @Entity()
-data class Expanse(
+data class Expense(
     val date: Date = Date.from(Instant.now()),
     val amount: Int,
     val category: String,
@@ -22,7 +22,7 @@ data class Expanse(
     }
 }
 
-class InvalidExpanseException(message: String) : Exception(message)
+class InvalidExpenseException(message: String) : Exception(message)
 
 object DateConverter {
     @TypeConverter
