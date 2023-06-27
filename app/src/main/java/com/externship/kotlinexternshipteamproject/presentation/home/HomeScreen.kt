@@ -1,10 +1,9 @@
 package com.externship.kotlinexternshipteamproject.presentation.home
 
-import androidx.compose.animation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,9 +13,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -46,12 +48,13 @@ import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.
 import com.externship.kotlinexternshipteamproject.presentation.home.componants.CustomProgressIndicator
 import com.externship.kotlinexternshipteamproject.presentation.home.componants.ExpanseItem
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
     navigateToAddEditExpanseScreen: () -> Unit,
-    navigateToProfileScreen: () -> Unit
+    navigateToProfileScreen: () -> Unit,
+    navigateToFilterByTagScreen: () -> Unit
 ) {
     val state = viewModel.state.value
     val snackbarHostState = remember { SnackbarHostState() }
@@ -166,8 +169,29 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(all = 10.dp)
+                    .height(400.dp)
             ) {
-                items(state.expense) { expanse ->
+                stickyHeader {
+                    Card(
+                        shape = RoundedCornerShape(10f),
+                        elevation = CardDefaults.cardElevation(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = MaterialTheme.colorScheme.primaryContainer)
+                            .clickable {
+                                navigateToFilterByTagScreen()
+                            }
+                    ) {
+                        Text(
+                            text = "See all tags",
+                            modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                }
+                items(state.expense.take(5)) { expanse ->
                     ExpanseItem(
                         expense = expanse,
                         modifier = Modifier,
@@ -179,16 +203,29 @@ fun HomeScreen(
                         onItemClick = {})
                 }
                 item {
-                    Spacer(modifier = Modifier.height(50.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(text = "This is the end of List")
+                    if (state.expense.size > 3) {
+                        Text(
+                            text = "Show all",
+                            modifier = Modifier
+                                .padding(vertical = 10.dp, horizontal = 10.dp)
+                                .clickable {
+
+                                },
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
-                    Spacer(modifier = Modifier.height(50.dp))
                 }
+//                item {
+//                    Spacer(modifier = Modifier.height(50.dp))
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.Center
+//                    ) {
+//                        Text(text = "This is the end of List")
+//                    }
+//                    Spacer(modifier = Modifier.height(50.dp))
+//                }
             }
         }
     }

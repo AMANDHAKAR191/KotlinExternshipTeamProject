@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpanseScreen
 import com.externship.kotlinexternshipteamproject.presentation.auth.AuthScreen
+import com.externship.kotlinexternshipteamproject.presentation.filter_expense_by_tag.FilterByTagScreen
 import com.externship.kotlinexternshipteamproject.presentation.home.HomeScreen
 import com.externship.kotlinexternshipteamproject.presentation.navigation.Screen.AuthScreen
 import com.externship.kotlinexternshipteamproject.presentation.navigation.Screen.ProfileScreen
@@ -63,6 +64,15 @@ fun NavGraph(
                 navController.navigate(Screen.AddEditExpenseScreen.route)
             }, navigateToProfileScreen = {
                 navController.navigate(ProfileScreen.route)
+            },
+                navigateToFilterByTagScreen = {
+                    navController.navigate(Screen.FilterByTagScreen.route)
+                })
+        }
+        composable(route = Screen.FilterByTagScreen.route) {
+            FilterByTagScreen(navigateToHomeScreen = {
+                navController.popBackStack()
+                navController.navigate(Screen.HomeScreen.route)
             })
         }
     }

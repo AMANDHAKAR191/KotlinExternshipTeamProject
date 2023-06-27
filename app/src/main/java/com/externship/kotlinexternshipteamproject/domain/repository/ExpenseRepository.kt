@@ -12,6 +12,10 @@ interface ExpenseRepository {
 
     fun getSumOfCurrentMonthExpenses(date: Date): Flow<Float?>
 
+    fun getAllTags(): Flow<List<String>>
+
+    fun getExpensesFilteredByTag(tag: String): Flow<List<Expense>>
+
     suspend fun insertExpense(expense: Expense)
 
     suspend fun deleteExpense(expense: Expense)

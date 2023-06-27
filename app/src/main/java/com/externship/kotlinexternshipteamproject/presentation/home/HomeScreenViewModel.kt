@@ -60,7 +60,24 @@ class HomeScreenViewModel @Inject constructor(
                 println("budgetAmount1: ${budgetAmount.value.amount}")
             }
         }
+        viewModelScope.launch {
+            expenseUseCases.getAllTags.invoke().collect {
+                getUniqueTags(it).forEach {
+                    println("tags: $it")
+                }
+            }
+        }
     }
+
+    private fun getUniqueTags(tagList: List<String>): List<String> {
+        val uniqueTags = mutableListOf<String>()
+        for (tagString in tagList) {
+            val tags = tagString.split(",").map { it.trim() }
+            uniqueTags.addAll(tags)
+        }
+        return uniqueTags.distinct()
+    }
+
 
     private fun getExpensesSum() {
 
@@ -89,7 +106,6 @@ class HomeScreenViewModel @Inject constructor(
             else -> {}
         }
     }
-
 
     private fun getExpenses() {
         getExpensesJob?.cancel()

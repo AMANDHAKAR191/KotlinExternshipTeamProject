@@ -23,6 +23,12 @@ interface ExpenseDao {
     @Query("SELECT SUM(amount) as TotalExpanse FROM expense WHERE strftime('%Y-%m', datetime(date / 1000, 'unixepoch')) = strftime('%Y-%m', datetime(:date / 1000, 'unixepoch')) AND type = 'Expanse'")
     fun getSumOfCurrentMonthExpense(date: Date): Flow<Float?>
 
+    @Query("SELECT tags FROM expense")
+    fun getAllTags(): Flow<List<String>>
+
+    @Query("SELECT * FROM expense WHERE tags LIKE '%' || :tag || '%'")
+    fun getExpenseFilteredByTag(tag: String): Flow<List<Expense>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun inertExpense(expense: Expense)
 

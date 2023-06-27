@@ -19,8 +19,10 @@ import com.externship.kotlinexternshipteamproject.domain.use_cases.auth.SaveBudg
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.AddExpense
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.DeleteExpense
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.ExpenseUseCases
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetAllTags
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpense
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpenses
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpensesFilteredByTag
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.SumOfCurrentMonthExpenses
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -150,6 +152,8 @@ class AppModule {
             getExpense = GetExpense(repository),
             getExpenses = GetExpenses(repository),
             sumOfCurrentMonthExpenses = SumOfCurrentMonthExpenses(repository),
+            getAllTags = GetAllTags(repository),
+            getExpensesFilteredByTag = GetExpensesFilteredByTag(repository),
             addExpense = AddExpense(repository),
             deleteExpense = DeleteExpense(repository)
         )
