@@ -27,7 +27,7 @@ class ProfileViewModel @Inject constructor(
 
     var _budgetAmount = mutableStateOf(
         BudgetTextFieldState(
-            hint = "Budget"
+            hint = "Budget(In Rupees)"
         )
     )
     var budgetAmount: State<BudgetTextFieldState> = _budgetAmount

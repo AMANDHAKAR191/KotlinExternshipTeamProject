@@ -52,7 +52,7 @@ class AddEditExpenseViewModel @Inject constructor(
 
     private val _amount = mutableStateOf(
         ExpenseTextFieldState(
-            hint = "Amount"
+            hint = "Amount(In Rupees)"
         )
     )
     val amount: State<ExpenseTextFieldState> = _amount

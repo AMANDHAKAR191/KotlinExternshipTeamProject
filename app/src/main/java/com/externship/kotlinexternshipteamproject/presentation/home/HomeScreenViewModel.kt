@@ -31,6 +31,7 @@ class HomeScreenViewModel @Inject constructor(
     val state: State<ExpenseState> = _state
 
     val photoUrl get() = profileRepository.photoUrl
+    val displayName get() = profileRepository.displayName
 
     var _budgetAmount = mutableStateOf(
         BudgetTextFieldState(

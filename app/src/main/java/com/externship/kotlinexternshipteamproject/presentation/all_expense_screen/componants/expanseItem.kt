@@ -66,7 +66,7 @@ fun ExpanseItem(
                     .padding(top = 5.dp)
             ) {
                 Row(modifier = Modifier) {
-                    Text(text = expense.amount.toString(), modifier = Modifier.weight(5f))
+                    Text(text = "₹ ${expense.amount.toString()}", modifier = Modifier.weight(5f))
                     Text(
                         text = com.externship.kotlinexternshipteamproject.presentation.filter_expense_by_tag.componants.formatDate(
                             expense.date

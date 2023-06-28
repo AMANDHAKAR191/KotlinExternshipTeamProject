@@ -6,15 +6,17 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.externship.kotlinexternshipteamproject.presentation.auth.components.AuthContent
 import com.externship.kotlinexternshipteamproject.presentation.auth.components.AuthTopBar
 import com.externship.kotlinexternshipteamproject.presentation.auth.components.OneTapSignIn
 import com.externship.kotlinexternshipteamproject.presentation.auth.components.SignInWithGoogle
+import com.externship.kotlinexternshipteamproject.presentation.navigation.EnterAnimation
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider.getCredential
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,19 +24,28 @@ fun AuthScreen(
     viewModel: AuthViewModel = hiltViewModel(),
     navigateToProfileScreen: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            AuthTopBar()
-        },
-        content = { padding ->
-            AuthContent(
-                padding = padding,
-                oneTapSignIn = {
-                    viewModel.oneTapSignIn()
-                }
-            )
-        }
-    )
+
+    var isVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(10)  // This delay ensures that isVisible is set to true after the initial composition
+        isVisible = true
+    }
+
+    EnterAnimation(visible = isVisible) {
+        Scaffold(
+            topBar = {
+                AuthTopBar()
+            },
+            content = { padding ->
+                AuthContent(
+                    padding = padding,
+                    oneTapSignIn = {
+                        viewModel.oneTapSignIn()
+                    }
+                )
+            }
+        )
+    }
 
     val launcher = rememberLauncherForActivityResult(StartIntentSenderForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
