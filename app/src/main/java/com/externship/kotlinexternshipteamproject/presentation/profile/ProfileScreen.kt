@@ -5,16 +5,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.externship.kotlinexternshipteamproject.core.Constants.EXIT_DURATION
 import com.externship.kotlinexternshipteamproject.core.Constants.REVOKE_ACCESS_MESSAGE
 import com.externship.kotlinexternshipteamproject.core.Constants.SIGN_OUT
+import com.externship.kotlinexternshipteamproject.presentation.navigation.EnterAnimationForProfileScreen
 import com.externship.kotlinexternshipteamproject.presentation.profile.components.ProfileContent
 import com.externship.kotlinexternshipteamproject.presentation.profile.components.ProfileTopBar
 import com.externship.kotlinexternshipteamproject.presentation.profile.components.RevokeAccess
 import com.externship.kotlinexternshipteamproject.presentation.profile.components.SignOut
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,38 +30,53 @@ fun ProfileScreen(
     }
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-        topBar = {
-            ProfileTopBar(
-                signOut = {
-                    viewModel.signOut()
-                },
-                revokeAccess = {
-                    viewModel.revokeAccess()
-                },
-                navigateBack = {
-                    navigateToHomeScreen()
-                }
-            )
-        },
-        content = { padding ->
-            println("viewModel.isLoading.value.isLoadingVisible1: ${viewModel.isLoading.value.isLoadingVisible}")
-            ProfileContent(
-                padding = padding,
-                photoUrl = viewModel.photoUrl,
-                displayName = viewModel.displayName,
-                budgetAmount = viewModel.budgetAmount.value.amount.toFloat(),
-                isLoadingVisible = viewModel.isLoading.value.isLoadingVisible,
-                onBudgetAmountChanged = {
-                    viewModel.onEvent(AddEditBudgetEvent.ChangeBudgetAmount(it))
-                },
-                onTrailingIconClicked = {
-                    viewModel.onEvent(AddEditBudgetEvent.SaveBudget)
-                }
-            )
+    var isProfileVisible by remember { mutableStateOf(true) }
+    // Define a separate lambda for handling back navigation
+    val handleBackNavigation: () -> Unit = {
+        isProfileVisible = false
+        coroutineScope.launch {
+            delay(EXIT_DURATION.toLong()) // Adjust this to match your animation duration
+            navigateToHomeScreen()
         }
-    )
+    }
+
+    EnterAnimationForProfileScreen(
+        visible = isProfileVisible
+    ) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+            topBar = {
+                ProfileTopBar(
+                    signOut = {
+                        viewModel.signOut()
+                    },
+                    revokeAccess = {
+                        viewModel.revokeAccess()
+                    },
+                    navigateBack = {
+                        handleBackNavigation()
+                    }
+                )
+            },
+            content = { padding ->
+                println("viewModel.isLoading.value.isLoadingVisible1: ${viewModel.isLoading.value.isLoadingVisible}")
+                ProfileContent(
+                    padding = padding,
+                    photoUrl = viewModel.photoUrl,
+                    displayName = viewModel.displayName,
+                    budgetAmount = viewModel.budgetAmount.value.amount.toFloat(),
+                    isLoadingVisible = viewModel.isLoading.value.isLoadingVisible,
+                    onBudgetAmountChanged = {
+                        viewModel.onEvent(AddEditBudgetEvent.ChangeBudgetAmount(it))
+                    },
+                    onTrailingIconClicked = {
+                        viewModel.onEvent(AddEditBudgetEvent.SaveBudget)
+                    }
+                )
+            }
+        )
+    }
+
 
     SignOut(
         navigateToAuthScreen = { signedOut ->

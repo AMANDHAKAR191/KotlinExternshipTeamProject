@@ -19,5 +19,6 @@ sealed class AddEditExpenseEvent {
     object SaveExpense : AddEditExpenseEvent()
 
     data class GetExpensesFilteredByTag(val tag: String) : AddEditExpenseEvent()
+    data class GetExpensesFilteredByType(val expenseType: String) : AddEditExpenseEvent()
     data class DeleteExpense(val expense: Expense) : AddEditExpenseEvent()
 }

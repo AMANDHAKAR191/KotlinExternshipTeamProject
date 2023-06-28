@@ -7,6 +7,7 @@ data class ExpenseUseCases(
     val sumOfCurrentMonthExpenses: SumOfCurrentMonthExpenses,
     val getAllTags: GetAllTags,
     val getExpensesFilteredByTag: GetExpensesFilteredByTag,
+    val getExpensesFilteredByType: GetExpensesFilteredByType,
     val addExpense: AddExpense,
     val deleteExpense: DeleteExpense
 )

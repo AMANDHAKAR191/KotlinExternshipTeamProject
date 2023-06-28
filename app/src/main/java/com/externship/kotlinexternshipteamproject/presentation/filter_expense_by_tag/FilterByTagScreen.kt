@@ -65,7 +65,7 @@ fun FilterByTagScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text(text = "Aman Dhaker") },
+                title = { Text(text = "Search Transaction By Tag") },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(),
                 navigationIcon = {
                     IconButton(onClick = { navigateToHomeScreen() }) {

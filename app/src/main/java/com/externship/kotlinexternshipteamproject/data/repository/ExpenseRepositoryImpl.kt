@@ -25,6 +25,10 @@ class ExpenseRepositoryImpl(
         return dao.getAllTags()
     }
 
+    override fun getExpensesFilteredByType(expenseType: String): Flow<List<Expense>> {
+        return dao.getExpensesFilteredByType(expenseType)
+    }
+
     override fun getExpensesFilteredByTag(tag: String): Flow<List<Expense>> {
         return dao.getExpenseFilteredByTag(tag)
     }

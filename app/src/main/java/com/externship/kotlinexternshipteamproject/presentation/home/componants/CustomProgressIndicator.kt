@@ -18,9 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -76,13 +75,14 @@ fun CustomProgressIndicator(
         }
     }
 
-    Card(
+    Surface(
         shape = RoundedCornerShape(10f),
-        elevation = CardDefaults.elevatedCardElevation(),
+        tonalElevation = 5.dp,
+        shadowElevation = 0.dp,
         modifier = Modifier
             .wrapContentWidth()
             .wrapContentHeight()
-            .padding(vertical = 10.dp, horizontal = 50.dp),
+            .padding(vertical = 10.dp, horizontal = 10.dp),
         content = {
             Column(
                 modifier = Modifier
@@ -95,7 +95,7 @@ fun CustomProgressIndicator(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colorScheme.inversePrimary)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .weight(4f)
                 ) {
                     Box(

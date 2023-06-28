@@ -23,6 +23,7 @@ import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetAllT
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpense
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpenses
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpensesFilteredByTag
+import com.externship.kotlinexternshipteamproject.domain.use_cases.other.GetExpensesFilteredByType
 import com.externship.kotlinexternshipteamproject.domain.use_cases.other.SumOfCurrentMonthExpenses
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -154,6 +155,7 @@ class AppModule {
             sumOfCurrentMonthExpenses = SumOfCurrentMonthExpenses(repository),
             getAllTags = GetAllTags(repository),
             getExpensesFilteredByTag = GetExpensesFilteredByTag(repository),
+            getExpensesFilteredByType = GetExpensesFilteredByType(repository),
             addExpense = AddExpense(repository),
             deleteExpense = DeleteExpense(repository)
         )

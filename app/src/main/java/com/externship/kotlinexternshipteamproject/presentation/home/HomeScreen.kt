@@ -3,7 +3,9 @@ package com.externship.kotlinexternshipteamproject.presentation.home
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +30,7 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -45,8 +48,8 @@ import coil.request.ImageRequest
 import com.externship.kotlinexternshipteamproject.domain.model.Expense
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpenseEvent
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpenseViewModel
+import com.externship.kotlinexternshipteamproject.presentation.all_expense_screen.componants.ExpanseItem
 import com.externship.kotlinexternshipteamproject.presentation.home.componants.CustomProgressIndicator
-import com.externship.kotlinexternshipteamproject.presentation.home.componants.ExpanseItem
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -54,7 +57,8 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
     navigateToAddEditExpanseScreen: () -> Unit,
     navigateToProfileScreen: () -> Unit,
-    navigateToFilterByTagScreen: () -> Unit
+    navigateToFilterByTagScreen: () -> Unit,
+    navigateToAllExpenseScreen: () -> Unit
 ) {
     val state = viewModel.state.value
     val snackbarHostState = remember { SnackbarHostState() }
@@ -165,56 +169,71 @@ fun HomeScreen(
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
-            LazyColumn(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 10.dp)
-                    .height(400.dp)
+                    .padding(all = 10.dp),
+                tonalElevation = 5.dp,
+                shadowElevation = 0.dp,
+                shape = RoundedCornerShape(10f)
             ) {
-                stickyHeader {
-                    Card(
-                        shape = RoundedCornerShape(10f),
-                        elevation = CardDefaults.cardElevation(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(color = MaterialTheme.colorScheme.primaryContainer)
-                            .clickable {
-                                navigateToFilterByTagScreen()
-                            }
-                    ) {
-                        Text(
-                            text = "See all tags",
-                            modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                }
-                items(state.expense.take(5)) { expanse ->
-                    ExpanseItem(
-                        expense = expanse,
-                        modifier = Modifier,
-                        onDeleteClick = {
-                            itemToDelete.value = expanse
-                            println("check 2")
-                            openDialog.value = true
-                        },
-                        onItemClick = {})
-                }
-                item {
-                    if (state.expense.size > 3) {
-                        Text(
-                            text = "Show all",
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 10.dp)
+                        .height(420.dp)
+                ) {
+                    stickyHeader {
+                        Card(
+                            shape = RoundedCornerShape(10f),
+                            elevation = CardDefaults.cardElevation(),
                             modifier = Modifier
-                                .padding(vertical = 10.dp, horizontal = 10.dp)
+                                .fillMaxWidth()
+                                .background(color = MaterialTheme.colorScheme.surfaceVariant)
                                 .clickable {
+                                    navigateToFilterByTagScreen()
+                                }
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Transaction History",
+                                    modifier = Modifier.padding(
+                                        vertical = 10.dp,
+                                        horizontal = 10.dp
+                                    ),
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
+                                Text(
+                                    text = "See all",
+                                    modifier = Modifier
+                                        .padding(vertical = 10.dp, horizontal = 10.dp)
+                                        .clickable {
+                                            navigateToAllExpenseScreen()
+                                        },
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                                },
-                            color = MaterialTheme.colorScheme.primary
-                        )
                     }
-                }
+                    items(state.expense.take(3)) { expanse ->
+                        ExpanseItem(
+                            expense = expanse,
+                            modifier = Modifier,
+                            onDeleteClick = {
+                                itemToDelete.value = expanse
+                                println("check 2")
+                                openDialog.value = true
+                            },
+                            onItemTagClick = {
+                                navigateToFilterByTagScreen()
+                            },
+                            onItemClick = {})
+                    }
 //                item {
 //                    Spacer(modifier = Modifier.height(50.dp))
 //                    Row(
@@ -226,6 +245,7 @@ fun HomeScreen(
 //                    }
 //                    Spacer(modifier = Modifier.height(50.dp))
 //                }
+                }
             }
         }
     }

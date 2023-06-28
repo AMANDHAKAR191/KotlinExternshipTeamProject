@@ -15,6 +15,7 @@ interface ExpenseRepository {
     fun getAllTags(): Flow<List<String>>
 
     fun getExpensesFilteredByTag(tag: String): Flow<List<Expense>>
+    fun getExpensesFilteredByType(expenseType: String): Flow<List<Expense>>
 
     suspend fun insertExpense(expense: Expense)
 

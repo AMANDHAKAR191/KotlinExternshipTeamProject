@@ -11,7 +11,7 @@ class GetExpenses @Inject constructor(
 ) {
     operator fun invoke(): Flow<List<Expense>> {
         return repository.getExpenses().map { expenses ->
-            expenses.sortedBy { it.date }
+            expenses.sortedByDescending { it.date }
         }
     }
 }

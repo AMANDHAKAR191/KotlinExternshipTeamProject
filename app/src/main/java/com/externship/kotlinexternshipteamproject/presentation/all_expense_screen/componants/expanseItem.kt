@@ -1,5 +1,6 @@
-package com.externship.kotlinexternshipteamproject.presentation.filter_expense_by_tag.componants
+package com.externship.kotlinexternshipteamproject.presentation.all_expense_screen.componants
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,19 +34,17 @@ import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ExpanseTagFilteredItem(
+fun ExpanseItem(
     expense: Expense,
     modifier: Modifier,
     onItemClick: () -> Unit,
+    onItemTagClick: () -> Unit,
+    onDeleteClick: @Composable () -> Unit
 ) {
+
     val tags: List<String> = ListStringConverter().toListString(expense.tags)
     var itemColor by remember { mutableStateOf<Color>(Color.Transparent) }
-
-    if (expense.type == "Expanse") {
-
-    } else {
-        itemColor = incomeColor
-    }
+    var isDeleteItem by remember { mutableStateOf(false) }
 
     Surface(
         shape = RoundedCornerShape(10f),
@@ -66,7 +67,20 @@ fun ExpanseTagFilteredItem(
             ) {
                 Row(modifier = Modifier) {
                     Text(text = expense.amount.toString(), modifier = Modifier.weight(5f))
-                    Text(text = formatDate(expense.date), modifier = Modifier.weight(3f))
+                    Text(
+                        text = com.externship.kotlinexternshipteamproject.presentation.filter_expense_by_tag.componants.formatDate(
+                            expense.date
+                        ), modifier = Modifier.weight(3f)
+                    )
+                    Image(
+                        Icons.Default.Delete,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                isDeleteItem = true
+                            },
+                        contentDescription = "Delete Icon"
+                    )
                 }
                 Row(
                     modifier = Modifier
@@ -81,7 +95,7 @@ fun ExpanseTagFilteredItem(
                     ) {
                         tags.forEach { chip ->
                             Chip(modifier = Modifier.padding(2.dp), label = chip, onChipClick = {
-
+                                onItemTagClick()
                             })
                         }
                     }
@@ -89,6 +103,12 @@ fun ExpanseTagFilteredItem(
                 Divider()
             }
         })
+
+
+    if (isDeleteItem) {
+        onDeleteClick()
+        isDeleteItem = false
+    }
 }
 
 fun formatDate(date: Date): String {

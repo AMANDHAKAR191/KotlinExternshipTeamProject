@@ -1,6 +1,7 @@
 package com.externship.kotlinexternshipteamproject.presentation.navigation
 
 import com.externship.kotlinexternshipteamproject.core.Constants.ADD_EDIT_EXPENSE_SCREEN
+import com.externship.kotlinexternshipteamproject.core.Constants.ALL_EXPENSE_SCREEN
 import com.externship.kotlinexternshipteamproject.core.Constants.AUTH_SCREEN
 import com.externship.kotlinexternshipteamproject.core.Constants.FILTER_BY_TAG_SCREEN
 import com.externship.kotlinexternshipteamproject.core.Constants.HOME_SCREEN
@@ -13,4 +14,6 @@ sealed class Screen(val route: String) {
     object HomeScreen : Screen(HOME_SCREEN)
 
     object FilterByTagScreen : Screen(FILTER_BY_TAG_SCREEN)
+
+    object AllExpenseScreen : Screen(ALL_EXPENSE_SCREEN)
 }
