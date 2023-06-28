@@ -12,10 +12,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -107,14 +108,19 @@ fun NavGraph(
 fun EnterAnimation(visible: Boolean, content: @Composable () -> Unit) {
     AnimatedVisibility(
         visible = visible,
-        enter = slideInHorizontally(
-            initialOffsetX = { -40 }
+        enter = slideIn(
+            initialOffset = { IntOffset(1000, 0) },  // slide in from right
+            animationSpec = tween(ENTER_DURATION, easing = FastOutSlowInEasing),
         ) + fadeIn(initialAlpha = 0.3f),
-        exit = slideOutHorizontally() + fadeOut(),
+        exit = slideOut(
+            targetOffset = { IntOffset(1000, 0) },  // slide out to right
+            animationSpec = tween(EXIT_DURATION, easing = FastOutSlowInEasing),
+        ) + fadeOut(),
         content = content,
         initiallyVisible = visible
     )
 }
+
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

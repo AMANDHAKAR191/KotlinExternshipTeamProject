@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -66,7 +67,6 @@ fun HomeScreen(
 
     val openDialog = remember { mutableStateOf(false) }
     val itemToDelete = remember { mutableStateOf<Expense?>(null) }
-    println("openDialog: ${openDialog.value}")
     if (openDialog.value) {  //ask confirmation from user to delete the expanse
         AlertDialog(
             title = { Text(text = "Alert") },
@@ -78,11 +78,7 @@ fun HomeScreen(
                 Text(text = "Yes,delete",
                     modifier = Modifier.clickable {
                         itemToDelete.value?.let {
-                            viewModel.onEvent(
-                                AddEditExpenseEvent.DeleteExpense(
-                                    it
-                                )
-                            )
+                            viewModel.onEvent(AddEditExpenseEvent.DeleteExpense(it))
                         }
                         openDialog.value = false
                     })
@@ -100,7 +96,6 @@ fun HomeScreen(
     viewModel.sumOfCurrentExpenses
     val progress = sumOfCurrentExpanses.let { (it) }
     val totalBudget = viewModel.budgetAmount.value.amount
-    println("totalBudget: $totalBudget")
 
     LaunchedEffect(key1 = viewModel.eventFlow) {
         viewModel.eventFlow.collect { event ->
@@ -161,12 +156,31 @@ fun HomeScreen(
                 .padding(innerPadding)
         ) {
             if (totalBudget == "") {
-                CustomProgressIndicator(totalBudgetAmount = 0f, progress = progress)
+                CustomProgressIndicator(totalBudgetAmount = 0f, progress = progress, onEditClick = {
+                    navigateToProfileScreen()
+                })
             } else {
                 CustomProgressIndicator(
                     totalBudgetAmount = totalBudget.toFloat(),
-                    progress = progress
+                    progress = progress,
+                    onEditClick = { navigateToProfileScreen() }
                 )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
+            ) {
+                Text(text = "Want to search by tag?")
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(text = "Search",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontStyle = FontStyle.Italic,
+                    modifier = Modifier
+                        .clickable {
+                            navigateToFilterByTagScreen()
+                        })
             }
             Spacer(modifier = Modifier.height(10.dp))
             Surface(
@@ -226,7 +240,6 @@ fun HomeScreen(
                             modifier = Modifier,
                             onDeleteClick = {
                                 itemToDelete.value = expanse
-                                println("check 2")
                                 openDialog.value = true
                             },
                             onItemTagClick = {
@@ -234,17 +247,6 @@ fun HomeScreen(
                             },
                             onItemClick = {})
                     }
-//                item {
-//                    Spacer(modifier = Modifier.height(50.dp))
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.Center
-//                    ) {
-//                        Text(text = "This is the end of List")
-//                    }
-//                    Spacer(modifier = Modifier.height(50.dp))
-//                }
                 }
             }
         }

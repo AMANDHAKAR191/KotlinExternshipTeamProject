@@ -30,14 +30,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.externship.kotlinexternshipteamproject.core.Constants
 import com.externship.kotlinexternshipteamproject.domain.model.Expense
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpenseEvent
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpenseViewModel
 import com.externship.kotlinexternshipteamproject.presentation.all_expense_screen.componants.ExpanseItem
+import com.externship.kotlinexternshipteamproject.presentation.navigation.EnterAnimation
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -56,7 +61,6 @@ fun AllExpenseScreen(
     }
     val openDialog = remember { mutableStateOf(false) }
     val itemToDelete = remember { mutableStateOf<Expense?>(null) }
-    println("openDialog: ${openDialog.value}")
     if (openDialog.value) {  //ask confirmation from user to delete the expanse
         AlertDialog(
             title = { Text(text = "Alert") },
@@ -68,11 +72,7 @@ fun AllExpenseScreen(
                 Text(text = "Yes,delete",
                     modifier = Modifier.clickable {
                         itemToDelete.value?.let {
-                            viewModel.onEvent(
-                                AddEditExpenseEvent.DeleteExpense(
-                                    it
-                                )
-                            )
+                            viewModel.onEvent(AddEditExpenseEvent.DeleteExpense(it))
                         }
                         openDialog.value = false
                     })
@@ -105,84 +105,101 @@ fun AllExpenseScreen(
         viewModel.onEvent(AddEditExpenseEvent.GetExpensesFilteredByType("Income"))
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "All Transactions") },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(),
-                navigationIcon = {
-                    IconButton(onClick = { navigateToHomeScreen() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "back")
-                    }
-                }
-            )
-        }) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                InputChip(selected = chipExpanseValueSelected, onClick = {
-                    viewModel.onEvent(AddEditExpenseEvent.ChangeExpenseType("Expanse"))
-                    chipExpanseValueSelected = !chipExpanseValueSelected
-                    if (chipIncomeValueSelected) {
-                        chipIncomeValueSelected = !chipIncomeValueSelected
-                    }
+    val coroutineScope = rememberCoroutineScope()
 
-                }, label = { Text(text = "Expanse") },
-                    modifier = Modifier
-                        .padding(all = 10.dp)
-                )
-                InputChip(selected = chipIncomeValueSelected, onClick = {
-                    viewModel.onEvent(AddEditExpenseEvent.ChangeExpenseType("Income"))
-                    chipIncomeValueSelected = !chipIncomeValueSelected
-                    if (chipExpanseValueSelected) {
-                        chipExpanseValueSelected = !chipExpanseValueSelected
-                    }
-                }, label = { Text(text = "Income") },
-                    modifier = Modifier
-                        .padding(all = 10.dp)
-                )
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 10.dp)
-            ) {
-                items(state.expense) { expanse ->
-                    ExpanseItem(
-                        expense = expanse,
-                        modifier = Modifier,
-                        onDeleteClick = {
-                            itemToDelete.value = expanse
-                            println("check 2")
-                            openDialog.value = true
-                        },
-                        onItemTagClick = { navigateToFilterByTagScreen() },
-                        onItemClick = {})
-                }
-                item {
-                    Spacer(modifier = Modifier.height(50.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(text = "This is the end of List")
-                    }
-                    Spacer(modifier = Modifier.height(50.dp))
-                }
-            }
+    var isVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(10)  // This delay ensures that isVisible is set to true after the initial composition
+        isVisible = true
+    }
+    // Define a separate lambda for handling back navigation
+    val handleBackNavigation: () -> Unit = {
+        isVisible = false
+        coroutineScope.launch {
+            delay(Constants.EXIT_DURATION.toLong()) // Adjust this to match your animation duration
+            navigateToHomeScreen()
         }
     }
 
 
+    EnterAnimation(visible = isVisible) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = "All Transactions") },
+                    colors = TopAppBarDefaults.mediumTopAppBarColors(),
+                    navigationIcon = {
+                        IconButton(onClick = { handleBackNavigation() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "back")
+                        }
+                    }
+                )
+            }) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    InputChip(selected = chipExpanseValueSelected, onClick = {
+                        viewModel.onEvent(AddEditExpenseEvent.ChangeExpenseType("Expanse"))
+                        chipExpanseValueSelected = !chipExpanseValueSelected
+                        if (chipIncomeValueSelected) {
+                            chipIncomeValueSelected = !chipIncomeValueSelected
+                        }
+
+                    }, label = { Text(text = "Expanse") },
+                        modifier = Modifier
+                            .padding(all = 10.dp)
+                    )
+                    InputChip(selected = chipIncomeValueSelected, onClick = {
+                        viewModel.onEvent(AddEditExpenseEvent.ChangeExpenseType("Income"))
+                        chipIncomeValueSelected = !chipIncomeValueSelected
+                        if (chipExpanseValueSelected) {
+                            chipExpanseValueSelected = !chipExpanseValueSelected
+                        }
+                    }, label = { Text(text = "Income") },
+                        modifier = Modifier
+                            .padding(all = 10.dp)
+                    )
+                }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 10.dp)
+                ) {
+                    items(state.expense) { expanse ->
+                        ExpanseItem(
+                            expense = expanse,
+                            modifier = Modifier,
+                            onDeleteClick = {
+                                itemToDelete.value = expanse
+                                println("check 2")
+                                openDialog.value = true
+                            },
+                            onItemTagClick = { navigateToFilterByTagScreen() },
+                            onItemClick = {})
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(50.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(text = "This is the end of List")
+                        }
+                        Spacer(modifier = Modifier.height(50.dp))
+                    }
+                }
+            }
+        }
+    }
 }

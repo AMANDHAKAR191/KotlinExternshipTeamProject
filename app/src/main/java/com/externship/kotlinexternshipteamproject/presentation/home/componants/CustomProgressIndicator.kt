@@ -5,7 +5,9 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,7 +40,8 @@ import com.externship.kotlinexternshipteamproject.ui.theme.budgetNear
 @Composable
 fun CustomProgressIndicator(
     totalBudgetAmount: Float,
-    progress: Float
+    progress: Float,
+    onEditClick: () -> Unit
 ) {
     val normalizeValue = progress / totalBudgetAmount
     val size by animateFloatAsState(
@@ -90,7 +95,26 @@ fun CustomProgressIndicator(
                     .padding(horizontal = 10.dp, vertical = 10.dp)
                     .height(80.dp)
             ) {
-                Text(text = textValue.value, modifier = Modifier.weight(6f))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(6f),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = textValue.value,
+                        modifier = Modifier.weight(8f)
+                    )
+                    Image(
+                        Icons.Default.Edit,
+                        contentDescription = "Edit budget",
+                        modifier = Modifier
+                            .clickable {
+                                onEditClick()
+                            }
+                            .weight(2f)
+                    )
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

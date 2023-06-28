@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +36,17 @@ class AllExpenseScreenViewModel @Inject constructor(
         when (event) {
             is AddEditExpenseEvent.GetExpensesFilteredByType -> {
                 getExpensesByType(event.expenseType)
+            }
+
+            is AddEditExpenseEvent.DeleteExpense -> {
+                viewModelScope.launch {
+                    expenseUseCases.deleteExpense.invoke(event.expense)
+                    _eventFlow.emit(
+                        AddEditExpenseViewModel.UiEvent.ShowSnackBar(
+                            message = "Expense deleted"
+                        )
+                    )
+                }
             }
 
             else -> {}

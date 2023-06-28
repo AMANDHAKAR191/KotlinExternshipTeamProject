@@ -197,34 +197,7 @@ class AddEditExpenseViewModel @Inject constructor(
                             )
                         )
                     }
-
                 }
-//                viewModelScope.launch {
-//                    try {
-//                        expenseUseCases.addExpense(
-//                            Expense(
-//                                amount = amount.value.amount,
-//                                category = category.value.text,
-//                                paymentMode = paymentMode.value.text,
-//                                tags = tags.value.tagsList,
-//                                note = note.value.text,
-//                                type = expenseType.value.text
-//                            )
-//                        )
-//                        _eventFlow.emit(
-//                            UiEvent.ShowSnackBar(
-//                                message = "Expense saved"
-//                            )
-//                        )
-//                    } catch (e: InvalidExpenseException) {
-//                        _eventFlow.emit(
-//                            UiEvent.ShowSnackBar(
-//                                message = e.message ?: "Couldn't save Expense"
-//                            )
-//                        )
-//                    }
-//
-//                }
             }
 
             else -> {}

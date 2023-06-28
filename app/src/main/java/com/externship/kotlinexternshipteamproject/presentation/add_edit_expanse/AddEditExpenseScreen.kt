@@ -3,11 +3,9 @@ package com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse
 import ChipInputField
 import android.Manifest
 import android.app.Activity
-import android.app.DatePickerDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Size
-import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,7 +15,6 @@ import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -67,10 +64,8 @@ import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.
 import com.externship.kotlinexternshipteamproject.presentation.navigation.EnterAnimationForFAB
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import java.util.Date
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditExpanseScreen(
     viewModel: AddEditExpenseViewModel = hiltViewModel(),
@@ -101,24 +96,18 @@ fun AddEditExpanseScreen(
         }
     }
 
-    val scanQrCode = remember {
-        mutableStateOf(false)
-    }
-    var chipExpanseValueSelected by remember {
-        mutableStateOf(false)
-    }
-    var chipIncomeValueSelected by remember {
-        mutableStateOf(false)
-    }
+    val scanQrCode = remember { mutableStateOf(false) }
+    var chipExpanseValueSelected by remember { mutableStateOf(false) }
+    var chipIncomeValueSelected by remember { mutableStateOf(false) }
 
     // Fetching the Local Context
     val mContext = LocalContext.current
+
+    //for qr code
     var code by remember { mutableStateOf("") }
     var hasCodeRead by remember { mutableStateOf(false) }
     val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraProviderFeature = remember {
-        ProcessCameraProvider.getInstance(context)
-    }
+    val cameraProviderFeature = remember { ProcessCameraProvider.getInstance(context) }
 
     //for asking camera permission
     var hasCameraPermission by remember {
@@ -145,7 +134,6 @@ fun AddEditExpanseScreen(
                 is AddEditExpenseViewModel.UiEvent.ShowSnackBar -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
-
                 else -> {}
             }
         }
@@ -180,35 +168,31 @@ fun AddEditExpanseScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top
                 ) {
-                    //
-                    // Declaring integer values
-                    // for year, month and day
-                    val mYear: Int
-                    val mMonth: Int
-                    val mDay: Int
+//todo uncomment for datePicker
+//                    // Declaring integer values
+//                    // for year, month and day
+//                    val mYear: Int
+//                    val mMonth: Int
+//                    val mDay: Int
+//                    // Initializing a Calendar
+//                    val mCalendar = Calendar.getInstance()
+//                    // Fetching current year, month and day
+//                    mYear = mCalendar.get(Calendar.YEAR)
+//                    mMonth = mCalendar.get(Calendar.MONTH)
+//                    mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+//                    mCalendar.time = Date()
+//                    // Declaring a string value to
+//                    // store date in string format
+//                    val mDate = remember { mutableStateOf("") }
+//                    // Declaring DatePickerDialog and setting
+//                    // initial values as current values (present year, month and day)
+//                    val mDatePickerDialog = DatePickerDialog(
+//                        mContext,
+//                        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+//                            mDate.value = "$mYear-${mMonth + 1}-$mMonth"
+//                        }, mYear, mMonth, mDay
+//                    )
 
-                    // Initializing a Calendar
-                    val mCalendar = Calendar.getInstance()
-
-                    // Fetching current year, month and day
-                    mYear = mCalendar.get(Calendar.YEAR)
-                    mMonth = mCalendar.get(Calendar.MONTH)
-                    mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
-
-                    mCalendar.time = Date()
-
-                    // Declaring a string value to
-                    // store date in string format
-                    val mDate = remember { mutableStateOf("") }
-
-                    // Declaring DatePickerDialog and setting
-                    // initial values as current values (present year, month and day)
-                    val mDatePickerDialog = DatePickerDialog(
-                        mContext,
-                        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                            mDate.value = "$mYear-${mMonth + 1}-$mMonth"
-                        }, mYear, mMonth, mDay
-                    )
                     viewModel.onPaymentSuccess = { responseCode, approvalRefNo ->
                         Toast.makeText(
                             context,
@@ -319,7 +303,7 @@ fun AddEditExpanseScreen(
                                 .padding(all = 10.dp)
                         )
                     }
-//todo work on this later update
+//todo work on this in later update
 //                CustomTextField(
 //                    text = dateState.text,
 //                    label = dateState.hint,
@@ -446,7 +430,7 @@ fun AddEditExpanseScreen(
                     Button(
                         onClick = {
                             if (chipExpanseValueSelected) {
-//todo uncomment this when final release
+//todo uncomment this code to enable easyUPIPayment
 //                            viewModel.makePayment(
 //                                viewModel.amount.value.text,
 //                                viewModel.paymentMode.value.text,
@@ -456,6 +440,7 @@ fun AddEditExpanseScreen(
 //                                context,
 //                                activity
 //                            )
+//                            and comment these 2 lines
                                 viewModel.onEvent(AddEditExpenseEvent.SaveExpense)
                                 navigateToHomeScreen()
                             }

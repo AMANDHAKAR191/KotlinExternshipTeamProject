@@ -30,10 +30,10 @@ fun ProfileScreen(
     }
     val coroutineScope = rememberCoroutineScope()
 
-    var isProfileVisible by remember { mutableStateOf(true) }
+    var isVisible by remember { mutableStateOf(true) }
     // Define a separate lambda for handling back navigation
     val handleBackNavigation: () -> Unit = {
-        isProfileVisible = false
+        isVisible = false
         coroutineScope.launch {
             delay(EXIT_DURATION.toLong()) // Adjust this to match your animation duration
             navigateToHomeScreen()
@@ -41,7 +41,7 @@ fun ProfileScreen(
     }
 
     EnterAnimationForProfileScreen(
-        visible = isProfileVisible
+        visible = isVisible
     ) {
         Scaffold(
             snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
