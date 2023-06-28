@@ -136,12 +136,12 @@ fun CustomProgressIndicator(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = progress.toString(),
+                            text = "₹ $progress",
                             modifier = Modifier
                                 .padding(vertical = 5.dp, horizontal = 10.dp)
                         )
                         Text(
-                            text = totalBudgetAmount.toString(),
+                            text = "₹ $totalBudgetAmount",
                             modifier = Modifier
                                 .padding(vertical = 5.dp, horizontal = 10.dp)
                         )

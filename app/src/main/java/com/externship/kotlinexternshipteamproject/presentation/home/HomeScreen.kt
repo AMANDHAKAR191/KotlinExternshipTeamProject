@@ -35,8 +35,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -51,6 +53,8 @@ import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.
 import com.externship.kotlinexternshipteamproject.presentation.add_edit_expanse.AddEditExpenseViewModel
 import com.externship.kotlinexternshipteamproject.presentation.all_expense_screen.componants.ExpanseItem
 import com.externship.kotlinexternshipteamproject.presentation.home.componants.CustomProgressIndicator
+import com.externship.kotlinexternshipteamproject.presentation.navigation.EnterAnimation
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -110,147 +114,156 @@ fun HomeScreen(
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            MediumTopAppBar(
-                title = { Text(text = "Aman Dhaker") },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(),
-                actions = {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(viewModel.photoUrl)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .width(32.dp)
-                            .height(32.dp)
-                            .clickable {
-                                navigateToProfileScreen()
-                            }
+    var isVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(10)  // This delay ensures that isVisible is set to true after the initial composition
+        isVisible = true
+    }
+
+    EnterAnimation(visible = isVisible) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                MediumTopAppBar(
+                    title = { Text(text = "Hello 👋${viewModel.displayName}") },
+                    colors = TopAppBarDefaults.mediumTopAppBarColors(),
+                    actions = {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(viewModel.photoUrl)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .width(32.dp)
+                                .height(32.dp)
+                                .clickable {
+                                    navigateToProfileScreen()
+                                }
+                        )
+                    }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        navigateToAddEditExpanseScreen()
+                    },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    shape = FloatingActionButtonDefaults.shape
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Add note")
+                }
+            },
+            bottomBar = {
+
+            }) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                if (totalBudget == "") {
+                    CustomProgressIndicator(
+                        totalBudgetAmount = 0f,
+                        progress = progress,
+                        onEditClick = {
+                            navigateToProfileScreen()
+                        })
+                } else {
+                    CustomProgressIndicator(
+                        totalBudgetAmount = totalBudget.toFloat(),
+                        progress = progress,
+                        onEditClick = { navigateToProfileScreen() }
                     )
                 }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navigateToAddEditExpanseScreen()
-                },
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                shape = FloatingActionButtonDefaults.shape
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add note")
-            }
-        },
-        bottomBar = {
-
-        }) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            if (totalBudget == "") {
-                CustomProgressIndicator(totalBudgetAmount = 0f, progress = progress, onEditClick = {
-                    navigateToProfileScreen()
-                })
-            } else {
-                CustomProgressIndicator(
-                    totalBudgetAmount = totalBudget.toFloat(),
-                    progress = progress,
-                    onEditClick = { navigateToProfileScreen() }
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp)
-            ) {
-                Text(text = "Want to search by tag?")
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(text = "Search",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontStyle = FontStyle.Italic,
-                    modifier = Modifier
-                        .clickable {
-                            navigateToFilterByTagScreen()
-                        })
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 10.dp),
-                tonalElevation = 5.dp,
-                shadowElevation = 0.dp,
-                shape = RoundedCornerShape(10f)
-            ) {
-                LazyColumn(
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(all = 10.dp)
-                        .height(420.dp)
+                        .padding(horizontal = 10.dp)
                 ) {
-                    stickyHeader {
-                        Card(
-                            shape = RoundedCornerShape(10f),
-                            elevation = CardDefaults.cardElevation(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = MaterialTheme.colorScheme.surfaceVariant)
-                                .clickable {
-                                    navigateToFilterByTagScreen()
-                                }
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Transaction History",
-                                    modifier = Modifier.padding(
-                                        vertical = 10.dp,
-                                        horizontal = 10.dp
-                                    ),
-                                    style = MaterialTheme.typography.headlineSmall
-                                )
-                                Text(
-                                    text = "See all",
-                                    modifier = Modifier
-                                        .padding(vertical = 10.dp, horizontal = 10.dp)
-                                        .clickable {
-                                            navigateToAllExpenseScreen()
-                                        },
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                    }
-                    items(state.expense.take(3)) { expanse ->
-                        ExpanseItem(
-                            expense = expanse,
-                            modifier = Modifier,
-                            onDeleteClick = {
-                                itemToDelete.value = expanse
-                                openDialog.value = true
-                            },
-                            onItemTagClick = {
+                    Text(text = "Want to search by tag?")
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(text = "Search",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontStyle = FontStyle.Italic,
+                        modifier = Modifier
+                            .clickable {
                                 navigateToFilterByTagScreen()
-                            },
-                            onItemClick = {})
+                            })
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 10.dp),
+                    tonalElevation = 5.dp,
+                    shadowElevation = 0.dp,
+                    shape = RoundedCornerShape(10f)
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(all = 10.dp)
+                            .height(420.dp)
+                    ) {
+                        stickyHeader {
+                            Card(
+                                shape = RoundedCornerShape(10f),
+                                elevation = CardDefaults.cardElevation(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(color = MaterialTheme.colorScheme.surfaceVariant)
+                                    .clickable {
+                                        navigateToFilterByTagScreen()
+                                    }
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "Transaction History",
+                                        modifier = Modifier.padding(
+                                            vertical = 10.dp,
+                                            horizontal = 10.dp
+                                        ),
+                                        style = MaterialTheme.typography.headlineSmall
+                                    )
+                                    Text(
+                                        text = "See all",
+                                        modifier = Modifier
+                                            .padding(vertical = 10.dp, horizontal = 10.dp)
+                                            .clickable {
+                                                navigateToAllExpenseScreen()
+                                            },
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                        }
+                        items(state.expense.take(3)) { expanse ->
+                            ExpanseItem(
+                                expense = expanse,
+                                modifier = Modifier,
+                                onDeleteClick = {
+                                    itemToDelete.value = expanse
+                                    openDialog.value = true
+                                },
+                                onItemTagClick = {
+                                    navigateToFilterByTagScreen()
+                                },
+                                onItemClick = {})
+                        }
                     }
                 }
             }
         }
     }
-
-
 }

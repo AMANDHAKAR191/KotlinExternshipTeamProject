@@ -65,7 +65,7 @@ fun ExpanseTagFilteredItem(
                     .padding(top = 5.dp)
             ) {
                 Row(modifier = Modifier) {
-                    Text(text = expense.amount.toString(), modifier = Modifier.weight(5f))
+                    Text(text = "₹ ${expense.amount.toString()}", modifier = Modifier.weight(5f))
                     Text(text = formatDate(expense.date), modifier = Modifier.weight(3f))
                 }
                 Row(
