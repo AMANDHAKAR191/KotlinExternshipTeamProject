@@ -20,8 +20,17 @@ interface ExpenseDao {
     suspend fun getExpenseById(id: Int): Expense?
 
     //    @Query("SELECT SUM(amount) AS total_amount FROM EXPANSE WHERE type = 'Expanse' AND strftime(date) = strftime(CURRENT_DATE)")
-    @Query("SELECT SUM(amount) as TotalExpanse FROM expense WHERE strftime('%Y-%m', datetime(date / 1000, 'unixepoch')) = strftime('%Y-%m', datetime(:date / 1000, 'unixepoch')) AND type = 'Expanse'")
+    @Query("SELECT SUM(amount) as TotalExpanse FROM expense WHERE strftime('%Y-%m', datetime(date / 1000, 'unixepoch')) = strftime('%Y-%m', datetime(:date / 1000, 'unixepoch')) AND type = 'Expense'")
     fun getSumOfCurrentMonthExpense(date: Date): Flow<Float?>
+
+    @Query("SELECT tags FROM expense")
+    fun getAllTags(): Flow<List<String>>
+
+    @Query("SELECT * FROM expense WHERE tags LIKE '%' || :tag || '%'")
+    fun getExpenseFilteredByTag(tag: String): Flow<List<Expense>>
+
+    @Query("SELECT * FROM expense WHERE type = :expenseType")
+    fun getExpensesFilteredByType(expenseType: String): Flow<List<Expense>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun inertExpense(expense: Expense)

@@ -18,7 +18,7 @@ data class Expense(
     @PrimaryKey val id: Int? = null
 ) {
     companion object {
-        val expanseType = listOf("Expanse", "Income")
+        val expanseType = listOf("Expense", "Income")
     }
 }
 

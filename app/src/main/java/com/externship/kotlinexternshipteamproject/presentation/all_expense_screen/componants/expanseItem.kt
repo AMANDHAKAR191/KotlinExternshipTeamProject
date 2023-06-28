@@ -1,4 +1,4 @@
-package com.externship.kotlinexternshipteamproject.presentation.home.componants
+package com.externship.kotlinexternshipteamproject.presentation.all_expense_screen.componants
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -38,21 +38,21 @@ fun ExpanseItem(
     expense: Expense,
     modifier: Modifier,
     onItemClick: () -> Unit,
+    onItemTagClick: () -> Unit,
     onDeleteClick: @Composable () -> Unit
 ) {
 
     val tags: List<String> = ListStringConverter().toListString(expense.tags)
     var itemColor by remember { mutableStateOf<Color>(Color.Transparent) }
     var isDeleteItem by remember { mutableStateOf(false) }
-    if (expense.type == "Expanse") {
-
-    } else {
-        itemColor = incomeColor
-    }
 
     Surface(
         shape = RoundedCornerShape(10f),
-        color = itemColor,
+        color = if (expense.type == "Expense") {
+            Color.Transparent
+        } else {
+            incomeColor
+        },
         tonalElevation = 10.dp,
         shadowElevation = 0.dp,
         modifier = modifier
@@ -95,7 +95,7 @@ fun ExpanseItem(
                     ) {
                         tags.forEach { chip ->
                             Chip(modifier = Modifier.padding(2.dp), label = chip, onChipClick = {
-
+                                onItemTagClick()
                             })
                         }
                     }
@@ -103,6 +103,8 @@ fun ExpanseItem(
                 Divider()
             }
         })
+
+
     if (isDeleteItem) {
         onDeleteClick()
         isDeleteItem = false

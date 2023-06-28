@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetExpenses @Inject constructor(
+class GetExpensesFilteredByTag @Inject constructor(
     private val repository: ExpenseRepository
 ) {
-    operator fun invoke(): Flow<List<Expense>> {
-        return repository.getExpenses().map { expenses ->
+    operator fun invoke(tag: String): Flow<List<Expense>> {
+        return repository.getExpensesFilteredByTag(tag).map { expenses ->
             expenses.sortedByDescending { it.date }
         }
     }
