@@ -1,5 +1,5 @@
-#Other source for Kotlin externship is avaliable in google drove link(provided below)
-##include Assignment1, Assignment2, Assignment3 and project(video, project report)
+# Source for Kotlin externship is avaliable in google drive link(provided below)
+## include Assignment1, Assignment2, Assignment3 and project(video, project report)
 https://drive.google.com/drive/folders/1wE8eWBG4xi6IHzeisE9OngejF1gBAL1k?usp=sharing
 
 # KotlinExternshipTeamProject
